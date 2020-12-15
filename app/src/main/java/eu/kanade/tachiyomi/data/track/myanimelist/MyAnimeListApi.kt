@@ -1,6 +1,6 @@
 package eu.kanade.tachiyomi.data.track.myanimelist
 
-import android.net.Uri
+import androidx.core.net.toUri
 import eu.kanade.tachiyomi.data.database.models.Track
 import eu.kanade.tachiyomi.data.track.TrackManager
 import eu.kanade.tachiyomi.data.track.model.TrackSearch
@@ -11,13 +11,6 @@ import eu.kanade.tachiyomi.network.asObservableSuccess
 import eu.kanade.tachiyomi.util.lang.toCalendar
 import eu.kanade.tachiyomi.util.selectInt
 import eu.kanade.tachiyomi.util.selectText
-import java.io.BufferedReader
-import java.io.InputStreamReader
-import java.text.SimpleDateFormat
-import java.util.Calendar
-import java.util.GregorianCalendar
-import java.util.Locale
-import java.util.zip.GZIPInputStream
 import okhttp3.FormBody
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.OkHttpClient
@@ -30,6 +23,13 @@ import org.jsoup.nodes.Document
 import org.jsoup.nodes.Element
 import org.jsoup.parser.Parser
 import rx.Observable
+import java.io.BufferedReader
+import java.io.InputStreamReader
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.GregorianCalendar
+import java.util.Locale
+import java.util.zip.GZIPInputStream
 
 class MyAnimeListApi(private val client: OkHttpClient, interceptor: MyAnimeListInterceptor) {
 
@@ -133,30 +133,6 @@ class MyAnimeListApi(private val client: OkHttpClient, interceptor: MyAnimeListI
             .map { it ?: throw Exception("Could not find manga") }
     }
 
-    fun login(username: String, password: String): String {
-        val csrf = getSessionInfo()
-
-        login(username, password, csrf)
-
-        return csrf
-    }
-
-    private fun getSessionInfo(): String {
-        val response = client.newCall(GET(loginUrl())).execute()
-
-        return Jsoup.parse(response.consumeBody())
-            .select("meta[name=csrf_token]")
-            .attr("content")
-    }
-
-    private fun login(username: String, password: String, csrf: String) {
-        val response = client.newCall(POST(url = loginUrl(), body = loginPostBody(username, password, csrf))).execute()
-
-        response.use {
-            if (response.priorResponse?.code != 302) throw Exception("Authentication error")
-        }
-    }
-
     private fun getList(): Observable<List<TrackSearch>> {
         return getListUrl()
             .flatMap { url ->
@@ -258,15 +234,15 @@ class MyAnimeListApi(private val client: OkHttpClient, interceptor: MyAnimeListI
         private const val PREFIX_MY = "my:"
         private const val TD = "td"
 
-        private fun mangaUrl(remoteId: Int) = baseMangaUrl + remoteId
-
-        private fun loginUrl() = Uri.parse(baseUrl).buildUpon()
+        fun loginUrl() = baseUrl.toUri().buildUpon()
             .appendPath("login.php")
             .toString()
 
+        private fun mangaUrl(remoteId: Int) = baseMangaUrl + remoteId
+
         private fun searchUrl(query: String): String {
             val col = "c[]"
-            return Uri.parse(baseUrl).buildUpon()
+            return baseUrl.toUri().buildUpon()
                 .appendPath("manga.php")
                 .appendQueryParameter("q", query)
                 .appendQueryParameter(col, "a")
@@ -278,30 +254,19 @@ class MyAnimeListApi(private val client: OkHttpClient, interceptor: MyAnimeListI
                 .toString()
         }
 
-        private fun exportListUrl() = Uri.parse(baseUrl).buildUpon()
+        private fun exportListUrl() = baseUrl.toUri().buildUpon()
             .appendPath("panel.php")
             .appendQueryParameter("go", "export")
             .toString()
 
-        private fun editPageUrl(mediaId: Int) = Uri.parse(baseModifyListUrl).buildUpon()
+        private fun editPageUrl(mediaId: Int) = baseModifyListUrl.toUri().buildUpon()
             .appendPath(mediaId.toString())
             .appendPath("edit")
             .toString()
 
-        private fun addUrl() = Uri.parse(baseModifyListUrl).buildUpon()
+        private fun addUrl() = baseModifyListUrl.toUri().buildUpon()
             .appendPath("add.json")
             .toString()
-
-        private fun loginPostBody(username: String, password: String, csrf: String): RequestBody {
-            return FormBody.Builder()
-                .add("user_name", username)
-                .add("password", password)
-                .add("cookie", "1")
-                .add("sublogin", "Login")
-                .add("submit", "1")
-                .add(CSRF, csrf)
-                .build()
-        }
 
         private fun exportPostBody(): RequestBody {
             return FormBody.Builder()
@@ -476,7 +441,9 @@ class MyAnimeListApi(private val client: OkHttpClient, interceptor: MyAnimeListI
         fun copyPersonalFrom(track: Track) {
             num_read_chapters = track.last_chapter_read.toString()
             val numScore = track.score.toInt()
-            if (numScore in 1..9) {
+            if (numScore == 0) {
+                score = ""
+            } else if (numScore in 1..10) {
                 score = numScore.toString()
             }
             status = track.status.toString()

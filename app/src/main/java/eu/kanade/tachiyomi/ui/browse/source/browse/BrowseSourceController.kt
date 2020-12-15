@@ -9,7 +9,8 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.widget.SearchView
-import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.core.view.isVisible
+import androidx.core.view.updatePadding
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -35,16 +36,15 @@ import eu.kanade.tachiyomi.ui.base.controller.FabController
 import eu.kanade.tachiyomi.ui.base.controller.NucleusController
 import eu.kanade.tachiyomi.ui.base.controller.withFadeTransaction
 import eu.kanade.tachiyomi.ui.library.ChangeMangaCategoriesDialog
+import eu.kanade.tachiyomi.ui.main.MainActivity
 import eu.kanade.tachiyomi.ui.manga.MangaController
 import eu.kanade.tachiyomi.ui.webview.WebViewActivity
 import eu.kanade.tachiyomi.util.system.connectivityManager
 import eu.kanade.tachiyomi.util.system.openInBrowser
 import eu.kanade.tachiyomi.util.system.toast
-import eu.kanade.tachiyomi.util.view.gone
 import eu.kanade.tachiyomi.util.view.inflate
 import eu.kanade.tachiyomi.util.view.shrinkOnScroll
 import eu.kanade.tachiyomi.util.view.snack
-import eu.kanade.tachiyomi.util.view.visible
 import eu.kanade.tachiyomi.widget.AutofitRecyclerView
 import eu.kanade.tachiyomi.widget.EmptyView
 import kotlinx.coroutines.Job
@@ -141,7 +141,7 @@ open class BrowseSourceController(bundle: Bundle) :
         adapter = FlexibleAdapter(null, this)
         setupRecycler(view)
 
-        binding.progress.visible()
+        binding.progress.isVisible = true
     }
 
     open fun initFilterSheet() {
@@ -167,19 +167,19 @@ open class BrowseSourceController(bundle: Bundle) :
         filterSheet?.setFilters(presenter.filterItems)
 
         // TODO: [ExtendedFloatingActionButton] hide/show methods don't work properly
-        filterSheet?.setOnShowListener { actionFab?.gone() }
-        filterSheet?.setOnDismissListener { actionFab?.visible() }
+        filterSheet?.setOnShowListener { actionFab?.isVisible = false }
+        filterSheet?.setOnDismissListener { actionFab?.isVisible = true }
 
         actionFab?.setOnClickListener { filterSheet?.show() }
 
-        actionFab?.visible()
+        actionFab?.isVisible = true
     }
 
     override fun configureFab(fab: ExtendedFloatingActionButton) {
         actionFab = fab
 
         // Controlled by initFilterSheet()
-        fab.gone()
+        fab.isVisible = false
 
         fab.setText(R.string.action_filter)
         fab.setIconResource(R.drawable.ic_filter_list_24dp)
@@ -216,7 +216,6 @@ open class BrowseSourceController(bundle: Bundle) :
                 id = R.id.recycler
                 layoutManager = LinearLayoutManager(context)
                 layoutParams = RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
-                addItemDecoration(DividerItemDecoration(context, DividerItemDecoration.VERTICAL))
             }
         } else {
             (binding.catalogueView.inflate(R.layout.source_recycler_autofit) as AutofitRecyclerView).apply {
@@ -239,12 +238,7 @@ open class BrowseSourceController(bundle: Bundle) :
 
         if (filterSheet != null) {
             // Add bottom padding if filter FAB is visible
-            recycler.setPadding(
-                recycler.paddingLeft,
-                recycler.paddingTop,
-                recycler.paddingRight,
-                view.resources.getDimensionPixelOffset(R.dimen.fab_list_padding)
-            )
+            recycler.updatePadding(bottom = view.resources.getDimensionPixelOffset(R.dimen.fab_list_padding))
             recycler.clipToPadding = false
 
             actionFab?.shrinkOnScroll(recycler)
@@ -270,7 +264,7 @@ open class BrowseSourceController(bundle: Bundle) :
         searchView.maxWidth = Int.MAX_VALUE
 
         val query = presenter.query
-        if (!query.isBlank()) {
+        if (query.isNotBlank()) {
             searchItem.expandActionView()
             searchView.setQuery(query, true)
             searchView.clearFocus()
@@ -404,7 +398,7 @@ open class BrowseSourceController(bundle: Bundle) :
 
             binding.emptyView.show(message, actions)
         } else {
-            snack = binding.catalogueView.snack(message, Snackbar.LENGTH_INDEFINITE) {
+            snack = (activity as? MainActivity)?.binding?.rootCoordinator?.snack(message, Snackbar.LENGTH_INDEFINITE) {
                 setAction(R.string.action_retry, retryAction)
             }
         }
@@ -465,11 +459,11 @@ open class BrowseSourceController(bundle: Bundle) :
         val adapter = adapter ?: return
 
         preferences.sourceDisplayMode().set(mode)
-        presenter.refreshDisplayMode()
         activity?.invalidateOptionsMenu()
         setupRecycler(view)
-        if (mode == DisplayMode.LIST || !view.context.connectivityManager.isActiveNetworkMetered) {
-            // Initialize mangas if going to grid view or if over wifi when going to list view
+
+        // Initialize mangas if not on a metered connection
+        if (!view.context.connectivityManager.isActiveNetworkMetered) {
             val mangas = (0 until adapter.itemCount).mapNotNull {
                 (adapter.getItem(it) as? SourceItem)?.manga
             }
@@ -496,13 +490,13 @@ open class BrowseSourceController(bundle: Bundle) :
      * @param manga the manga to find.
      * @return the holder of the manga or null if it's not bound.
      */
-    private fun getHolder(manga: Manga): SourceHolder? {
+    private fun getHolder(manga: Manga): SourceHolder<*>? {
         val adapter = adapter ?: return null
 
         adapter.allBoundViewHolders.forEach { holder ->
             val item = adapter.getItem(holder.bindingAdapterPosition) as? SourceItem
             if (item != null && item.manga.id!! == manga.id!!) {
-                return holder as SourceHolder
+                return holder as SourceHolder<*>
             }
         }
 
@@ -514,7 +508,7 @@ open class BrowseSourceController(bundle: Bundle) :
      */
     private fun showProgressBar() {
         binding.emptyView.hide()
-        binding.progress.visible()
+        binding.progress.isVisible = true
         snack?.dismiss()
         snack = null
     }
@@ -524,7 +518,7 @@ open class BrowseSourceController(bundle: Bundle) :
      */
     private fun hideProgressBar() {
         binding.emptyView.hide()
-        binding.progress.gone()
+        binding.progress.isVisible = false
     }
 
     /**

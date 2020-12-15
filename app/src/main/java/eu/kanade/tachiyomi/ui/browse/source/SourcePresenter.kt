@@ -6,7 +6,6 @@ import eu.kanade.tachiyomi.source.CatalogueSource
 import eu.kanade.tachiyomi.source.LocalSource
 import eu.kanade.tachiyomi.source.SourceManager
 import eu.kanade.tachiyomi.ui.base.presenter.BasePresenter
-import java.util.TreeMap
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -14,13 +13,13 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
 import rx.Observable
 import rx.Subscription
 import uy.kohesive.injekt.Injekt
 import uy.kohesive.injekt.api.get
+import java.util.TreeMap
 
 /**
  * Presenter of [SourceController]
@@ -72,11 +71,12 @@ class SourcePresenter(
         var sourceItems = byLang.flatMap {
             val langItem = LangItem(it.key)
             it.value.map { source ->
-                if (source.id.toString() in pinnedSourceIds) {
-                    pinnedSources.add(SourceItem(source, LangItem(PINNED_KEY)))
+                val isPinned = source.id.toString() in pinnedSourceIds
+                if (isPinned) {
+                    pinnedSources.add(SourceItem(source, LangItem(PINNED_KEY), isPinned))
                 }
 
-                SourceItem(source, langItem)
+                SourceItem(source, langItem, isPinned)
             }
         }
 
@@ -102,7 +102,10 @@ class SourcePresenter(
     }
 
     private fun updateLastUsedSource(sourceId: Long) {
-        val source = (sourceManager.get(sourceId) as? CatalogueSource)?.let { SourceItem(it) }
+        val source = (sourceManager.get(sourceId) as? CatalogueSource)?.let {
+            val isPinned = it.id.toString() in preferences.pinnedSources().get()
+            SourceItem(it, null, isPinned)
+        }
         source?.let { view?.setLastUsedSource(it) }
     }
 
@@ -124,7 +127,7 @@ class SourcePresenter(
         return sourceManager.getCatalogueSources()
             .filter { it.lang in languages }
             .filterNot { it.id.toString() in disabledSourceIds }
-            .sortedBy { "(${it.lang}) ${it.name}" } +
+            .sortedBy { "(${it.lang}) ${it.name.toLowerCase()}" } +
             sourceManager.get(LocalSource.ID) as LocalSource
     }
 

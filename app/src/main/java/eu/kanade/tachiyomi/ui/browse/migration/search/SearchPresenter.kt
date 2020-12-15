@@ -13,10 +13,10 @@ import eu.kanade.tachiyomi.ui.browse.source.globalsearch.GlobalSearchCardItem
 import eu.kanade.tachiyomi.ui.browse.source.globalsearch.GlobalSearchItem
 import eu.kanade.tachiyomi.ui.browse.source.globalsearch.GlobalSearchPresenter
 import eu.kanade.tachiyomi.util.chapter.syncChaptersWithSource
-import java.util.Date
 import rx.Observable
 import rx.android.schedulers.AndroidSchedulers
 import rx.schedulers.Schedulers
+import java.util.Date
 
 class SearchPresenter(
     initialQuery: String? = "",
@@ -97,7 +97,7 @@ class SearchPresenter(
                 val prevMangaChapters = db.getChapters(prevManga).executeAsBlocking()
                 val maxChapterRead = prevMangaChapters
                     .filter { it.read }
-                    .maxBy { it.chapter_number }?.chapter_number
+                    .maxByOrNull { it.chapter_number }?.chapter_number
                 val bookmarkedChapters = prevMangaChapters
                     .filter { it.bookmark && it.isRecognizedNumber }
                     .map { it.chapter_number }

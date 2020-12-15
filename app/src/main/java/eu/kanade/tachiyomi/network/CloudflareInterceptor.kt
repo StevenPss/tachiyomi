@@ -2,29 +2,29 @@ package eu.kanade.tachiyomi.network
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.os.Build
 import android.os.Handler
 import android.os.Looper
-import android.webkit.WebResourceRequest
-import android.webkit.WebResourceResponse
 import android.webkit.WebSettings
 import android.webkit.WebView
 import android.widget.Toast
-import androidx.webkit.WebViewClientCompat
-import androidx.webkit.WebViewFeature
 import eu.kanade.tachiyomi.R
 import eu.kanade.tachiyomi.source.online.HttpSource
+import eu.kanade.tachiyomi.util.lang.launchUI
+import eu.kanade.tachiyomi.util.system.WebViewClientCompat
+import eu.kanade.tachiyomi.util.system.WebViewUtil
 import eu.kanade.tachiyomi.util.system.isOutdated
 import eu.kanade.tachiyomi.util.system.setDefaultSettings
 import eu.kanade.tachiyomi.util.system.toast
-import java.io.IOException
-import java.util.concurrent.CountDownLatch
-import java.util.concurrent.TimeUnit
 import okhttp3.Cookie
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import okhttp3.Interceptor
 import okhttp3.Request
 import okhttp3.Response
 import uy.kohesive.injekt.injectLazy
+import java.io.IOException
+import java.util.concurrent.CountDownLatch
+import java.util.concurrent.TimeUnit
 
 class CloudflareInterceptor(private val context: Context) : Interceptor {
 
@@ -43,9 +43,17 @@ class CloudflareInterceptor(private val context: Context) : Interceptor {
 
     @Synchronized
     override fun intercept(chain: Interceptor.Chain): Response {
+        val originalRequest = chain.request()
+
+        if (!WebViewUtil.supportsWebView(context)) {
+            launchUI {
+                context.toast(R.string.information_webview_required, Toast.LENGTH_LONG)
+            }
+            return chain.proceed(originalRequest)
+        }
+
         initWebView
 
-        val originalRequest = chain.request()
         val response = chain.proceed(originalRequest)
 
         // Check if Cloudflare anti-bot is on
@@ -81,7 +89,8 @@ class CloudflareInterceptor(private val context: Context) : Interceptor {
         var isWebViewOutdated = false
 
         val origRequestUrl = request.url.toString()
-        val headers = request.headers.toMultimap().mapValues { it.value.getOrNull(0) ?: "" }
+        val headers = request.headers.toMultimap().mapValues { it.value.getOrNull(0) ?: "" }.toMutableMap()
+        headers["X-Requested-With"] = WebViewUtil.REQUESTED_WITH
 
         handler.post {
             val webview = WebView(context)
@@ -106,7 +115,7 @@ class CloudflareInterceptor(private val context: Context) : Interceptor {
                     }
 
                     // HTTP error codes are only received since M
-                    if (WebViewFeature.isFeatureSupported(WebViewFeature.RECEIVE_WEB_RESOURCE_ERROR) &&
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
                         url == origRequestUrl && !challengeFound
                     ) {
                         // The first request didn't return the challenge, abort.
@@ -114,13 +123,15 @@ class CloudflareInterceptor(private val context: Context) : Interceptor {
                     }
                 }
 
-                override fun onReceivedHttpError(
+                override fun onReceivedErrorCompat(
                     view: WebView,
-                    request: WebResourceRequest,
-                    errorResponse: WebResourceResponse
+                    errorCode: Int,
+                    description: String?,
+                    failingUrl: String,
+                    isMainFrame: Boolean
                 ) {
-                    if (request.isForMainFrame) {
-                        if (errorResponse.statusCode == 503) {
+                    if (isMainFrame) {
+                        if (errorCode == 503) {
                             // Found the Cloudflare challenge page.
                             challengeFound = true
                         } else {

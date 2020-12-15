@@ -8,6 +8,7 @@ import eu.kanade.tachiyomi.data.database.models.Chapter
 import eu.kanade.tachiyomi.data.database.models.Manga
 import eu.kanade.tachiyomi.data.download.model.Download
 import eu.kanade.tachiyomi.data.download.model.DownloadQueue
+import eu.kanade.tachiyomi.data.preference.PreferencesHelper
 import eu.kanade.tachiyomi.source.Source
 import eu.kanade.tachiyomi.source.SourceManager
 import eu.kanade.tachiyomi.source.model.Page
@@ -24,10 +25,8 @@ import uy.kohesive.injekt.injectLazy
  */
 class DownloadManager(private val context: Context) {
 
-    /**
-     * The sources manager.
-     */
-    private val sourceManager by injectLazy<SourceManager>()
+    private val sourceManager: SourceManager by injectLazy()
+    private val preferences: PreferencesHelper by injectLazy()
 
     /**
      * Downloads provider, used to retrieve the folders where the chapters are or should be stored.
@@ -175,6 +174,17 @@ class DownloadManager(private val context: Context) {
     }
 
     /**
+     * Returns the download from queue if the chapter is queued for download
+     * else it will return null which means that the chapter is not queued for download
+     *
+     * @param chapter the chapter to check.
+     */
+    fun getChapterDownloadOrNull(chapter: Chapter): Download? {
+        return downloader.queue
+            .firstOrNull { it.chapter.id == chapter.id && it.chapter.manga_id == chapter.manga_id }
+    }
+
+    /**
      * Returns the amount of downloaded chapters for a manga.
      *
      * @param manga the manga to check.
@@ -199,14 +209,19 @@ class DownloadManager(private val context: Context) {
      * @param manga the manga of the chapters.
      * @param source the source of the chapters.
      */
-    fun deleteChapters(chapters: List<Chapter>, manga: Manga, source: Source) {
-        queue.remove(chapters)
-        val chapterDirs = provider.findChapterDirs(chapters, manga, source)
+    fun deleteChapters(chapters: List<Chapter>, manga: Manga, source: Source): List<Chapter> {
+        val filteredChapters = getChaptersToDelete(chapters)
+
+        queue.remove(filteredChapters)
+
+        val chapterDirs = provider.findChapterDirs(filteredChapters, manga, source)
         chapterDirs.forEach { it.delete() }
-        cache.removeChapters(chapters, manga)
+        cache.removeChapters(filteredChapters, manga)
         if (cache.getDownloadCount(manga) == 0) { // Delete manga directory if empty
             chapterDirs.firstOrNull()?.parentFile?.delete()
         }
+
+        return filteredChapters
     }
 
     /**
@@ -228,7 +243,7 @@ class DownloadManager(private val context: Context) {
      * @param manga the manga of the chapters.
      */
     fun enqueueDeleteChapters(chapters: List<Chapter>, manga: Manga) {
-        pendingDeleter.addChapters(chapters, manga)
+        pendingDeleter.addChapters(getChaptersToDelete(chapters), manga)
     }
 
     /**
@@ -251,16 +266,28 @@ class DownloadManager(private val context: Context) {
      * @param newChapter the target chapter with the new name.
      */
     fun renameChapter(source: Source, manga: Manga, oldChapter: Chapter, newChapter: Chapter) {
-        val oldName = provider.getChapterDirName(oldChapter)
+        val oldNames = provider.getValidChapterDirNames(oldChapter)
         val newName = provider.getChapterDirName(newChapter)
         val mangaDir = provider.getMangaDir(manga, source)
 
-        val oldFolder = mangaDir.findFile(oldName)
+        // Assume there's only 1 version of the chapter name formats present
+        val oldFolder = oldNames.asSequence()
+            .mapNotNull { mangaDir.findFile(it) }
+            .firstOrNull()
+
         if (oldFolder?.renameTo(newName) == true) {
             cache.removeChapter(oldChapter, manga)
             cache.addChapter(newName, mangaDir, manga)
         } else {
-            Timber.e("Could not rename downloaded chapter: %s.", oldName)
+            Timber.e("Could not rename downloaded chapter: %s.", oldNames.joinToString())
+        }
+    }
+
+    private fun getChaptersToDelete(chapters: List<Chapter>): List<Chapter> {
+        return if (!preferences.removeBookmarkedChapters()) {
+            chapters.filterNot { it.bookmark }
+        } else {
+            chapters
         }
     }
 }

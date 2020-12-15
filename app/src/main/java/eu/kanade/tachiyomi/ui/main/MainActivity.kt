@@ -1,15 +1,15 @@
 package eu.kanade.tachiyomi.ui.main
 
-import android.app.Activity
 import android.app.SearchManager
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
-import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.coordinatorlayout.widget.CoordinatorLayout
+import androidx.core.view.isVisible
+import androidx.core.view.updateLayoutParams
+import androidx.preference.PreferenceDialogController
 import com.bluelinelabs.conductor.Conductor
 import com.bluelinelabs.conductor.Controller
 import com.bluelinelabs.conductor.ControllerChangeHandler
@@ -17,12 +17,11 @@ import com.bluelinelabs.conductor.Router
 import com.bluelinelabs.conductor.RouterTransaction
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.behavior.HideBottomViewOnScrollBehavior
-import com.google.android.material.snackbar.Snackbar
-import com.google.android.material.tabs.TabLayout
 import eu.kanade.tachiyomi.BuildConfig
 import eu.kanade.tachiyomi.Migrations
 import eu.kanade.tachiyomi.R
 import eu.kanade.tachiyomi.data.notification.NotificationReceiver
+import eu.kanade.tachiyomi.data.preference.asImmediateFlow
 import eu.kanade.tachiyomi.databinding.MainActivityBinding
 import eu.kanade.tachiyomi.extension.api.ExtensionGithubApi
 import eu.kanade.tachiyomi.ui.base.activity.BaseActivity
@@ -31,6 +30,7 @@ import eu.kanade.tachiyomi.ui.base.controller.FabController
 import eu.kanade.tachiyomi.ui.base.controller.NoToolbarElevationController
 import eu.kanade.tachiyomi.ui.base.controller.RootController
 import eu.kanade.tachiyomi.ui.base.controller.TabbedController
+import eu.kanade.tachiyomi.ui.base.controller.ToolbarLiftOnScrollController
 import eu.kanade.tachiyomi.ui.base.controller.withFadeTransaction
 import eu.kanade.tachiyomi.ui.browse.BrowseController
 import eu.kanade.tachiyomi.ui.browse.source.globalsearch.GlobalSearchController
@@ -42,18 +42,11 @@ import eu.kanade.tachiyomi.ui.recent.history.HistoryController
 import eu.kanade.tachiyomi.ui.recent.updates.UpdatesController
 import eu.kanade.tachiyomi.util.lang.launchIO
 import eu.kanade.tachiyomi.util.lang.launchUI
-import eu.kanade.tachiyomi.util.system.toast
-import eu.kanade.tachiyomi.util.view.gone
-import eu.kanade.tachiyomi.util.view.snack
-import eu.kanade.tachiyomi.util.view.visible
-import java.util.Date
-import java.util.concurrent.TimeUnit
-import kotlinx.android.synthetic.main.main_activity.appbar
-import kotlinx.android.synthetic.main.main_activity.tabs
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
 import timber.log.Timber
+import java.util.Date
+import java.util.concurrent.TimeUnit
 
 class MainActivity : BaseActivity<MainActivityBinding>() {
 
@@ -86,13 +79,16 @@ class MainActivity : BaseActivity<MainActivityBinding>() {
         }
 
         setContentView(binding.root)
-
         setSupportActionBar(binding.toolbar)
 
-        tabAnimator = ViewHeightAnimator(binding.tabs)
+        tabAnimator = ViewHeightAnimator(binding.tabs, 0L)
         bottomNavAnimator = ViewHeightAnimator(binding.bottomNav)
 
         // Set behavior of bottom nav
+        preferences.hideBottomBar()
+            .asImmediateFlow { setBottomNavBehaviorOnScroll() }
+            .launchIn(scope)
+
         binding.bottomNav.setOnNavigationItemSelectedListener { item ->
             val id = item.itemId
 
@@ -129,39 +125,48 @@ class MainActivity : BaseActivity<MainActivityBinding>() {
             onBackPressed()
         }
 
-        router.addChangeListener(object : ControllerChangeHandler.ControllerChangeListener {
-            override fun onChangeStarted(
-                to: Controller?,
-                from: Controller?,
-                isPush: Boolean,
-                container: ViewGroup,
-                handler: ControllerChangeHandler
-            ) {
-                syncActivityViewWithController(to, from)
-            }
+        router.addChangeListener(
+            object : ControllerChangeHandler.ControllerChangeListener {
+                override fun onChangeStarted(
+                    to: Controller?,
+                    from: Controller?,
+                    isPush: Boolean,
+                    container: ViewGroup,
+                    handler: ControllerChangeHandler
+                ) {
+                    syncActivityViewWithController(to, from)
+                }
 
-            override fun onChangeCompleted(
-                to: Controller?,
-                from: Controller?,
-                isPush: Boolean,
-                container: ViewGroup,
-                handler: ControllerChangeHandler
-            ) {
+                override fun onChangeCompleted(
+                    to: Controller?,
+                    from: Controller?,
+                    isPush: Boolean,
+                    container: ViewGroup,
+                    handler: ControllerChangeHandler
+                ) {
+                }
             }
-        })
+        )
 
         syncActivityViewWithController(router.backstack.lastOrNull()?.controller())
 
         if (savedInstanceState == null) {
             // Show changelog prompt on update
             if (Migrations.upgrade(preferences) && !BuildConfig.DEBUG) {
-                showUpdateInfoSnackbar()
+                WhatsNewDialogController().showDialog(router)
             }
         }
 
-        setExtensionsBadge()
-        preferences.extensionUpdatesCount().asFlow()
-            .onEach { setExtensionsBadge() }
+        preferences.extensionUpdatesCount()
+            .asImmediateFlow { setExtensionsBadge() }
+            .launchIn(scope)
+
+        preferences.downloadedOnly()
+            .asImmediateFlow { binding.downloadedOnly.isVisible = it }
+            .launchIn(scope)
+
+        preferences.incognitoMode()
+            .asImmediateFlow { binding.incognitoMode.isVisible = it }
             .launchIn(scope)
     }
 
@@ -236,12 +241,12 @@ class MainActivity : BaseActivity<MainActivityBinding>() {
                 setSelectedNavItem(R.id.nav_more)
                 router.pushController(RouterTransaction.with(DownloadController()))
             }
-            Intent.ACTION_SEARCH, "com.google.android.gms.actions.SEARCH_ACTION" -> {
+            Intent.ACTION_SEARCH, Intent.ACTION_PROCESS_TEXT, "com.google.android.gms.actions.SEARCH_ACTION" -> {
                 // If the intent match the "standard" Android search intent
                 // or the Google-specific search intent (triggered by saying or typing "search *query* on *Tachiyomi*" in Google Search/Google Assistant)
 
                 // Get the search query provided in extras, and if not null, perform a global search with it.
-                val query = intent.getStringExtra(SearchManager.QUERY)
+                val query = intent.getStringExtra(SearchManager.QUERY) ?: intent.getCharSequenceExtra(Intent.EXTRA_PROCESS_TEXT)?.toString()
                 if (query != null && query.isNotEmpty()) {
                     if (router.backstackSize > 1) {
                         router.popToRoot()
@@ -316,11 +321,14 @@ class MainActivity : BaseActivity<MainActivityBinding>() {
     }
 
     private fun setRoot(controller: Controller, id: Int) {
-        router.setRoot(RouterTransaction.with(controller).tag(id.toString()))
+        router.setRoot(controller.withFadeTransaction().tag(id.toString()))
     }
 
     private fun syncActivityViewWithController(to: Controller?, from: Controller? = null) {
         if (from is DialogController || to is DialogController) {
+            return
+        }
+        if (from is PreferenceDialogController || to is PreferenceDialogController) {
             return
         }
 
@@ -349,62 +357,66 @@ class MainActivity : BaseActivity<MainActivityBinding>() {
         }
 
         if (from is FabController) {
-            binding.rootFab.gone()
+            binding.rootFab.isVisible = false
             from.cleanupFab(binding.rootFab)
         }
         if (to is FabController) {
-            binding.rootFab.visible()
+            binding.rootFab.isVisible = true
             to.configureFab(binding.rootFab)
         }
 
-        if (to is NoToolbarElevationController) {
-            binding.appbar.disableElevation()
-        } else {
-            binding.appbar.enableElevation()
+        when (to) {
+            is NoToolbarElevationController -> {
+                binding.appbar.disableElevation()
+            }
+            is ToolbarLiftOnScrollController -> {
+                binding.appbar.enableElevation(true)
+            }
+            else -> {
+                binding.appbar.enableElevation(false)
+            }
         }
     }
 
     fun showBottomNav(visible: Boolean, collapse: Boolean = false) {
         val layoutParams = binding.bottomNav.layoutParams as CoordinatorLayout.LayoutParams
-        val bottomViewNavigationBehavior = layoutParams.behavior as HideBottomViewOnScrollBehavior
+        val bottomViewNavigationBehavior = layoutParams.behavior as? HideBottomViewOnScrollBehavior
         if (visible) {
             if (collapse) {
                 bottomNavAnimator.expand()
             }
 
-            bottomViewNavigationBehavior.slideUp(binding.bottomNav)
+            bottomViewNavigationBehavior?.slideUp(binding.bottomNav)
         } else {
             if (collapse) {
                 bottomNavAnimator.collapse()
             }
 
-            bottomViewNavigationBehavior.slideDown(binding.bottomNav)
+            bottomViewNavigationBehavior?.slideDown(binding.bottomNav)
         }
     }
 
-    private fun showUpdateInfoSnackbar() {
-        val snack = binding.rootCoordinator.snack(
-            getString(R.string.updated_version, BuildConfig.VERSION_NAME),
-            Snackbar.LENGTH_INDEFINITE
-        ) {
-            setAction(R.string.whats_new) {
-                val url = "https://github.com/inorichi/tachiyomi/releases/tag/v${BuildConfig.VERSION_NAME}"
-                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
-                startActivity(intent)
+    /**
+     * Used to manually offset a view within the activity's child views that might be cut off due to
+     * the collapsing AppBarLayout.
+     */
+    fun fixViewToBottom(view: View) {
+        binding.appbar.addOnOffsetChangedListener(
+            AppBarLayout.OnOffsetChangedListener { appBarLayout, verticalOffset ->
+                val maxAbsOffset = appBarLayout.measuredHeight - binding.tabs.measuredHeight
+                view.translationY = -maxAbsOffset - verticalOffset.toFloat()
             }
+        )
+    }
 
-            // Ensure the snackbar sits above the bottom nav
-            val layoutParams = view.layoutParams as CoordinatorLayout.LayoutParams
-            layoutParams.anchorId = binding.bottomNav.id
-            layoutParams.anchorGravity = Gravity.TOP
-            layoutParams.gravity = Gravity.TOP
-            view.layoutParams = layoutParams
-        }
+    private fun setBottomNavBehaviorOnScroll() {
+        showBottomNav(visible = true)
 
-        // Manually handle dismiss delay since Snackbar.LENGTH_LONG is a too short
-        launchIO {
-            delay(5000)
-            snack.dismiss()
+        binding.bottomNav.updateLayoutParams<CoordinatorLayout.LayoutParams> {
+            behavior = when {
+                preferences.hideBottomBar().get() -> HideBottomViewOnScrollBehavior<View>()
+                else -> null
+            }
         }
     }
 
@@ -422,19 +434,4 @@ class MainActivity : BaseActivity<MainActivityBinding>() {
         const val INTENT_SEARCH_QUERY = "query"
         const val INTENT_SEARCH_FILTER = "filter"
     }
-}
-
-/**
- * Used to manually offset a view within the activity's child views that might be cut off due to the
- * collapsing AppBarLayout.
- */
-fun View.offsetAppbarHeight(activity: Activity) {
-    val appbar: AppBarLayout = activity.appbar
-    val tabs: TabLayout = activity.tabs
-    appbar.addOnOffsetChangedListener(
-        AppBarLayout.OnOffsetChangedListener { appBarLayout, verticalOffset ->
-            val maxAbsOffset = appBarLayout.measuredHeight - tabs.measuredHeight
-            translationY = -maxAbsOffset - verticalOffset.toFloat()
-        }
-    )
 }

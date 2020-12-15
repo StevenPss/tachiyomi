@@ -18,7 +18,6 @@
     <string name="action_filter_downloaded">Telah dimuat turun</string>
     <string name="action_filter_bookmarked">Ditanda</string>
     <string name="action_filter_unread">Belum dibaca</string>
-    <string name="action_filter_read">Sudah dibaca</string>
     <string name="action_filter_empty">Kosongkan tapisan</string>
     <string name="action_sort_alpha">Abjad</string>
     <string name="action_sort_total">Jumlah bab</string>
@@ -114,8 +113,8 @@
     <string name="pref_page_transitions">Menggerakkan peralihan muka surat</string>
     <string name="pref_show_page_number">Tunjuk nombor muka surat</string>
     <string name="pref_crop_borders">Potong pinggiran</string>
-    <string name="pref_custom_brightness">Guna kecerahan tersuai</string>
-    <string name="pref_custom_color_filter">Guna turas warna tersuai</string>
+    <string name="pref_custom_brightness">Kecerahan tersuai</string>
+    <string name="pref_custom_color_filter">Turas warna tersuai</string>
     <string name="pref_keep_screen_on">Tetap nyalakan skrin</string>
     <string name="pref_reader_navigation">Navigasi</string>
     <string name="pref_read_with_volume_keys">Butang volum</string>
@@ -154,8 +153,8 @@
     <string name="color_filter_a_value">A</string>
     <string name="pref_download_directory">Lokasi muat turun</string>
     <string name="pref_download_only_over_wifi">Hanya muat turun melalui Wi-Fi</string>
-    <string name="pref_remove_after_marked_as_read">Padam apabila ditandakan sebagai dibaca</string>
-    <string name="pref_remove_after_read">Padam setelah dibaca</string>
+    <string name="pref_remove_after_marked_as_read">Selepas ditandakan sebagai dibaca secara manual</string>
+    <string name="pref_remove_after_read">Setelah membaca</string>
     <string name="custom_dir">Lokasi tersuai</string>
     <string name="disabled">Dinyahaktifkan</string>
     <string name="last_read_chapter">Bab terakhir dibaca</string>
@@ -175,7 +174,6 @@
     <string name="pref_backup_service_category">Sandaran automatik</string>
     <string name="pref_backup_interval">Kekerapan sandaran</string>
     <string name="pref_backup_slots">Sandaran maksimum</string>
-    <string name="source_not_found">Sumber tidak ditemui</string>
     <string name="backup_created">Sandaran dibuat</string>
     <string name="restore_completed">Pemulihan selesai</string>
     <string name="backup_restore_content">Pemulihan menggunakan Sambungan untuk memperolehi data, caj telco mungkin dikenakan.
@@ -212,8 +210,6 @@
     <string name="library_search_hint">Tajuk atau pengarang…</string>
     <string name="updating_category">Kemaskini kategori dalam progres</string>
     <string name="local_source_badge">Setempat</string>
-    <string name="confirm_delete_manga">Adakah anda pasti mahu keluarkan manga yang dipilih?</string>
-    <string name="also_delete_chapters">Juga padamkan bab yang telah dimuat turun</string>
     <string name="source_requires_login">Sumber ini mengharuskan anda log masuk</string>
     <string name="select_source">Pilih sumber</string>
     <string name="no_valid_sources">Sila aktifkan sekurang-kurangnya satu sumber yang sah</string>
@@ -296,7 +292,6 @@
     <string name="notification_no_connection_body">Sambungan tidak tersedia</string>
     <string name="file_select_cover">Pilih imej muka hadapan</string>
     <string name="file_select_backup">Pilih fail sandaran</string>
-    <string name="file_select_icon">Pilih ikon pintasan</string>
     <string name="update_check_confirm">Muat turun</string>
     <string name="update_check_ignore">Abaikan</string>
     <string name="update_check_no_new_updates">Tiada versi baharu tersedia</string>
@@ -321,7 +316,6 @@
     <string name="download_notifier_download_paused">Muat turun dihentikan sebentar</string>
     <string name="channel_common">Biasa</string>
     <string name="channel_library">Pustaka</string>
-    <string name="channel_downloader">Pemuat turun</string>
     <string name="label_migration">Pindah sumber</string>
     <string name="label_extensions">Sambungan</string>
     <string name="label_extension_info">Info sambungan</string>
@@ -456,7 +450,6 @@
         <item quantity="other">Untuk %d tajuk</item>
     </plurals>
     <string name="notices">Notis binaan Preview</string>
-    <string name="changelog">Log perubahan</string>
     <string name="pref_theme_light">Tema terang</string>
     <string name="theme_light_default">Lalai</string>
     <string name="theme_light_blue">Biru terang</string>
@@ -481,7 +474,6 @@
     <string name="label_sources">Sumber</string>
     <string name="pref_webtoon_side_padding">Tambahan sisi</string>
     <string name="webtoon_side_padding_10">10%</string>
-    <string name="channel_backup_restore">Sandaran dan memulih</string>
     <string name="information_webview_required">WebView diperlukan untuk Tachiyomi</string>
     <string name="recent_manga_time">Bab %1$s - %2$s</string>
     <string name="error_invalid_date_supplied">Tarikh dimasukkan tidak sah</string>
@@ -490,7 +482,6 @@
     <string name="add_tracking">Tambah penjejakan</string>
     <string name="manga_info_collapse">Tutup</string>
     <string name="manga_info_expand">Buka</string>
-    <string name="manga_info_about_label">Tentang</string>
     <string name="in_library">Dalam pustaka</string>
     <string name="add_to_library">Tambah ke pustaka</string>
     <string name="pinned_sources">Disematkan</string>
@@ -519,8 +510,6 @@
         <item quantity="other">%1$s baki</item>
     </plurals>
     <string name="pref_search_pinned_sources_only">Hanya termasuk sumber yang disematkan</string>
-    <string name="channel_backup_restore_complete">Selesai</string>
-    <string name="channel_backup_restore_progress">Kemajuan</string>
     <string name="gray_background">Kelabu</string>
     <string name="viewer">Mod membaca</string>
     <string name="pref_category_for_this_series">Untuk siri ini</string>
@@ -533,7 +522,7 @@
         <item quantity="other">Selesai dalam %1$s dengan %2$s ralat</item>
     </plurals>
     <string name="action_display_unread_badge">Penanda tidak dibaca</string>
-    <string name="tracking_info">Sinkron satu hala untuk kemas kini bab kemajuan dalam sistem penjejakan. Sediakan penjejakan untuk penyertaan manga persendirian dari tab penjejakan mereka.</string>
+    <string name="tracking_info">Sinkron satu hala untuk kemas kini bab kemajuan dalam sistem penjejakan. Sediakan penjejakan untuk penyertaan manga persendirian dari butang penjejakan mereka.</string>
     <string name="pref_refresh_library_covers">Segar semula muka hadapan manga pustaka</string>
     <plurals name="notification_update_error">
         <item quantity="other">%1$d gagal kemas kini</item>
@@ -569,7 +558,7 @@
     </plurals>
     <string name="action_sort_descending">Menurun</string>
     <string name="action_disable">Matikan</string>
-    <string name="pref_dns_over_https_summary">Mula semula diperlukan untuk berkesan</string>
+    <string name="requires_app_restart">Mula semula diperlukan untuk berkesan</string>
     <string name="pref_dns_over_https" translatable="false">DNS melalui HTTPS (Cloudflare)</string>
     <string name="label_network">Rangkaian</string>
     <string name="pref_jump_to_chapters">Terus ke bab bila buka</string>
@@ -581,4 +570,65 @@
     <string name="unknown_status">Status tidak diketahui</string>
     <string name="unknown_author">Pengarang tidak diketahui</string>
     <string name="action_download_unread">Muat turun bab belum dibaca</string>
+    <string name="updated_version">Dikemaskini ke v%1$s</string>
+    <string name="whats_new">Pembaharuan baharu</string>
+    <string name="action_sort_date_added">Tarikh ditambah</string>
+    <string name="download_insufficient_space">Memuat turun tidak berjaya kerana kekurangan ruang storan</string>
+    <string name="action_global_search_query">Cari untuk \"%1$s\" menggunakan carian keseluruhan</string>
+    <string name="pref_category_reading_mode">Mod membaca</string>
+    <string name="pref_category_locale">Tempat</string>
+    <string name="pref_category_theme">Tema</string>
+    <plurals name="num_trackers">
+        <item quantity="other">%d penjejak</item>
+    </plurals>
+    <string name="no_pinned_sources">Tiada sumber yang disematkan</string>
+    <string name="download_notifier_download_finish">Muat turun selesai</string>
+    <string name="channel_progress">Kemajuan</string>
+    <string name="group_backup_restore">Sandaran dan memulih</string>
+    <string name="group_downloader">Muat turun</string>
+    <string name="channel_complete">Selesai</string>
+    <string name="channel_errors">Ralat</string>
+    <string name="backup_restore_missing_trackers">Penjejak yang tidak dilog masuk:</string>
+    <string name="pref_allow_nsfw_sources">Sumber 18+ tahun keatas</string>
+    <string name="pref_allow_nsfw_sources_blocked">Sembunyi</string>
+    <string name="pref_allow_nsfw_sources_allowed_multisource">Sembunyi di sumber tetapi tunjuk dalam senarai sambungan</string>
+    <string name="pref_allow_nsfw_sources_allowed">Papar</string>
+    <string name="pref_remove_bookmarked_chapters">Padam bab yang ditanda</string>
+    <string name="pref_category_delete_chapters">Padam bab</string>
+    <string name="ext_nsfw_warning">Mungkin mengandungi kandungan 18+ tahun keatas</string>
+    <string name="ext_nsfw_short">18+</string>
+    <string name="parental_controls_info">Ini tidak menghalang sambungan yang tidak rasmi atau berpotensi tidak menggunakan tetapan yang betul daripada menayangkan kandungan 18+ tahun keatas dalam aplikasi.</string>
+    <plurals name="missing_chapters_warning">
+        <item quantity="other">Ada %d bab yang hilang</item>
+    </plurals>
+    <string name="no_chapters_error">Tiada bab dijumpai</string>
+    <string name="action_web_view">WebView</string>
+    <string name="chapter_settings_updated">Tetapan bab lalai dikemaskini</string>
+    <string name="set_chapter_settings_as_default">Tetapkan sebagai lalai</string>
+    <string name="also_set_chapter_settings_for_library">Gunakan juga untuk semua manga dalam pustaka</string>
+    <string name="confirm_set_chapter_settings">Adakah anda pasti ingin simpan tetapan ini sebagai lalai\?</string>
+    <string name="chapter_settings">Tetapan bab</string>
+    <string name="share_page_info">%1$s: %2$s, halaman %3$d</string>
+    <string name="action_search_settings">Carian tetapan</string>
+    <string name="downloaded_chapters">Bab dimuat turun</string>
+    <string name="manga_from_library">Manga dari pustaka</string>
+    <string name="pref_hide_bottom_bar_on_scroll">Sembunyi bar bawah bila skrol</string>
+    <string name="pref_incognito_mode_summary">Menjeda sejarah membaca</string>
+    <string name="pref_incognito_mode">Mod inkognito</string>
+    <string name="pref_clear_history_summary">Padam sejarah membaca untuk semua manga</string>
+    <string name="pref_clear_history">Padamkan sejarah</string>
+    <string name="clear_history_confirmation">Anda pasti\? Semua sejarah akan hilang.</string>
+    <string name="clear_history_completed">Sejarah dipadamkan</string>
+    <string name="spen_next_page">Halaman seterusnya</string>
+    <string name="spen_previous_page">Halaman terdahulu</string>
+    <string name="full_restore_offline">Pulih secara luar talian, selesai dengan cepat tetapi hanya ada apa yang ada dalam fail sandaran</string>
+    <string name="full_restore_online">Pulih secara dalam talian, ia perlahan tetapi memberikan maklumat and bab</string>
+    <string name="full_restore_mode">Mod Rangkaian</string>
+    <string name="pref_backup_auto_create_legacy">Buat juga sandaran legasi</string>
+    <string name="pref_create_legacy_backup_summary">Boleh digunakan pada versi Tachiyomi yang</string>
+    <string name="pref_create_legacy_backup">Buat sandaran legasi</string>
+    <string name="migration_help_guide">Panduan memindahkan sumber</string>
+    <string name="invalid_backup_file_type">Fail sandaran tidak sah: %1$s</string>
+    <string name="pref_category_nsfw_content">Kandungan 18+</string>
+    <string name="process_text_action_name">Cari di Tachiyomi</string>
 </resources>

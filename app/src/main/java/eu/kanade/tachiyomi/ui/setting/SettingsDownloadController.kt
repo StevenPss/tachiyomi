@@ -4,10 +4,10 @@ import android.app.Activity
 import android.app.Dialog
 import android.content.ActivityNotFoundException
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
 import androidx.core.content.ContextCompat
+import androidx.core.net.toUri
 import androidx.preference.PreferenceScreen
 import com.afollestad.materialdialogs.MaterialDialog
 import com.afollestad.materialdialogs.list.listItemsSingleChoice
@@ -15,7 +15,6 @@ import com.hippo.unifile.UniFile
 import eu.kanade.tachiyomi.R
 import eu.kanade.tachiyomi.data.database.DatabaseHelper
 import eu.kanade.tachiyomi.data.database.models.Category
-import eu.kanade.tachiyomi.data.preference.PreferenceKeys as Keys
 import eu.kanade.tachiyomi.data.preference.PreferencesHelper
 import eu.kanade.tachiyomi.data.preference.asImmediateFlow
 import eu.kanade.tachiyomi.ui.base.controller.DialogController
@@ -28,19 +27,20 @@ import eu.kanade.tachiyomi.util.preference.preference
 import eu.kanade.tachiyomi.util.preference.preferenceCategory
 import eu.kanade.tachiyomi.util.preference.switchPreference
 import eu.kanade.tachiyomi.util.preference.titleRes
-import eu.kanade.tachiyomi.util.system.getFilePicker
-import java.io.File
+import eu.kanade.tachiyomi.util.system.toast
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import uy.kohesive.injekt.Injekt
 import uy.kohesive.injekt.api.get
 import uy.kohesive.injekt.injectLazy
+import java.io.File
+import eu.kanade.tachiyomi.data.preference.PreferenceKeys as Keys
 
 class SettingsDownloadController : SettingsController() {
 
     private val db: DatabaseHelper by injectLazy()
 
-    override fun setupPreferenceScreen(screen: PreferenceScreen) = with(screen) {
+    override fun setupPreferenceScreen(screen: PreferenceScreen) = screen.apply {
         titleRes = R.string.pref_category_downloads
 
         preference {
@@ -54,7 +54,7 @@ class SettingsDownloadController : SettingsController() {
 
             preferences.downloadsDirectory().asFlow()
                 .onEach { path ->
-                    val dir = UniFile.fromUri(context, Uri.parse(path))
+                    val dir = UniFile.fromUri(context, path.toUri())
                     summary = dir.filePath ?: path
                 }
                 .launchIn(scope)
@@ -65,7 +65,7 @@ class SettingsDownloadController : SettingsController() {
             defaultValue = true
         }
         preferenceCategory {
-            titleRes = R.string.pref_remove_after_read
+            titleRes = R.string.pref_category_delete_chapters
 
             switchPreference {
                 key = Keys.removeAfterMarkedAsRead
@@ -76,13 +76,21 @@ class SettingsDownloadController : SettingsController() {
                 key = Keys.removeAfterReadSlots
                 titleRes = R.string.pref_remove_after_read
                 entriesRes = arrayOf(
-                    R.string.disabled, R.string.last_read_chapter,
-                    R.string.second_to_last, R.string.third_to_last, R.string.fourth_to_last,
+                    R.string.disabled,
+                    R.string.last_read_chapter,
+                    R.string.second_to_last,
+                    R.string.third_to_last,
+                    R.string.fourth_to_last,
                     R.string.fifth_to_last
                 )
                 entryValues = arrayOf("-1", "0", "1", "2", "3", "4")
                 defaultValue = "-1"
                 summary = "%s"
+            }
+            switchPreference {
+                key = Keys.removeBookmarkedChapters
+                titleRes = R.string.pref_remove_bookmarked_chapters
+                defaultValue = false
             }
         }
 
@@ -143,16 +151,16 @@ class SettingsDownloadController : SettingsController() {
     }
 
     fun predefinedDirectorySelected(selectedDir: String) {
-        val path = Uri.fromFile(File(selectedDir))
+        val path = File(selectedDir).toUri()
         preferences.downloadsDirectory().set(path.toString())
     }
 
-    fun customDirectorySelected(currentDir: String) {
+    fun customDirectorySelected() {
         val intent = Intent(Intent.ACTION_OPEN_DOCUMENT_TREE)
         try {
             startActivityForResult(intent, DOWNLOAD_DIR)
         } catch (e: ActivityNotFoundException) {
-            startActivityForResult(preferences.context.getFilePicker(currentDir), DOWNLOAD_DIR)
+            activity?.toast(R.string.file_picker_error)
         }
     }
 
@@ -173,7 +181,7 @@ class SettingsDownloadController : SettingsController() {
                 ) { _, position, text ->
                     val target = targetController as? SettingsDownloadController
                     if (position == externalDirs.lastIndex) {
-                        target?.customDirectorySelected(currentDir)
+                        target?.customDirectorySelected()
                     } else {
                         target?.predefinedDirectorySelected(text.toString())
                     }

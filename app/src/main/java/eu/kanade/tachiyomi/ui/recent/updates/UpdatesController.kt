@@ -8,7 +8,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.view.ActionMode
-import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import eu.davidea.flexibleadapter.FlexibleAdapter
 import eu.davidea.flexibleadapter.SelectableAdapter
@@ -23,7 +22,6 @@ import eu.kanade.tachiyomi.ui.base.controller.NucleusController
 import eu.kanade.tachiyomi.ui.base.controller.RootController
 import eu.kanade.tachiyomi.ui.base.controller.withFadeTransaction
 import eu.kanade.tachiyomi.ui.main.MainActivity
-import eu.kanade.tachiyomi.ui.main.offsetAppbarHeight
 import eu.kanade.tachiyomi.ui.manga.MangaController
 import eu.kanade.tachiyomi.ui.reader.ReaderActivity
 import eu.kanade.tachiyomi.util.system.notificationManager
@@ -78,10 +76,6 @@ class UpdatesController :
         return binding.root
     }
 
-    /**
-     * Called when view is created
-     * @param view created view
-     */
     override fun onViewCreated(view: View) {
         super.onViewCreated(view)
         view.context.notificationManager.cancel(Notifications.ID_NEW_CHAPTERS)
@@ -89,7 +83,6 @@ class UpdatesController :
         // Init RecyclerView and adapter
         val layoutManager = LinearLayoutManager(view.context)
         binding.recycler.layoutManager = layoutManager
-        binding.recycler.addItemDecoration(DividerItemDecoration(view.context, DividerItemDecoration.VERTICAL))
         binding.recycler.setHasFixedSize(true)
         adapter = UpdatesAdapter(this@UpdatesController)
         binding.recycler.adapter = adapter
@@ -113,7 +106,7 @@ class UpdatesController :
             }
             .launchIn(scope)
 
-        binding.actionToolbar.offsetAppbarHeight(activity!!)
+        (activity!! as MainActivity).fixViewToBottom(binding.actionToolbar)
     }
 
     override fun onDestroyView(view: View) {

@@ -1,66 +1,59 @@
 package eu.kanade.tachiyomi.ui.browse.extension
 
 import android.view.View
+import eu.davidea.viewholders.FlexibleViewHolder
 import eu.kanade.tachiyomi.R
 import eu.kanade.tachiyomi.data.glide.GlideApp
+import eu.kanade.tachiyomi.data.preference.PreferencesHelper
+import eu.kanade.tachiyomi.databinding.ExtensionCardItemBinding
 import eu.kanade.tachiyomi.extension.model.Extension
 import eu.kanade.tachiyomi.extension.model.InstallStep
-import eu.kanade.tachiyomi.ui.base.holder.BaseFlexibleViewHolder
-import eu.kanade.tachiyomi.ui.base.holder.SlicedHolder
 import eu.kanade.tachiyomi.util.system.LocaleHelper
-import io.github.mthli.slice.Slice
-import kotlinx.android.synthetic.main.extension_card_item.card
-import kotlinx.android.synthetic.main.extension_card_item.ext_button
-import kotlinx.android.synthetic.main.extension_card_item.ext_title
-import kotlinx.android.synthetic.main.extension_card_item.image
-import kotlinx.android.synthetic.main.extension_card_item.lang
-import kotlinx.android.synthetic.main.extension_card_item.version
-import kotlinx.android.synthetic.main.extension_card_item.warning
+import uy.kohesive.injekt.Injekt
+import uy.kohesive.injekt.api.get
 
-class ExtensionHolder(view: View, override val adapter: ExtensionAdapter) :
-    BaseFlexibleViewHolder(view, adapter),
-    SlicedHolder {
+class ExtensionHolder(view: View, val adapter: ExtensionAdapter) :
+    FlexibleViewHolder(view, adapter) {
 
-    override val slice = Slice(card).apply {
-        setColor(adapter.cardBackground)
+    private val binding = ExtensionCardItemBinding.bind(view)
+
+    private val shouldLabelNsfw by lazy {
+        Injekt.get<PreferencesHelper>().labelNsfwExtension()
     }
 
-    override val viewToSlice: View
-        get() = card
-
     init {
-        ext_button.setOnClickListener {
+        binding.extButton.setOnClickListener {
             adapter.buttonClickListener.onButtonClick(bindingAdapterPosition)
         }
     }
 
     fun bind(item: ExtensionItem) {
         val extension = item.extension
-        setCardEdges(item)
 
-        ext_title.text = extension.name
-        version.text = extension.versionName
-        lang.text = LocaleHelper.getSourceDisplayName(extension.lang, itemView.context)
-        warning.text = when {
-            extension is Extension.Untrusted -> itemView.context.getString(R.string.ext_untrusted).toUpperCase()
-            extension is Extension.Installed && extension.isObsolete -> itemView.context.getString(R.string.ext_obsolete).toUpperCase()
-            extension is Extension.Installed && extension.isUnofficial -> itemView.context.getString(R.string.ext_unofficial).toUpperCase()
-            else -> null
-        }
+        binding.extTitle.text = extension.name
+        binding.version.text = extension.versionName
+        binding.lang.text = LocaleHelper.getSourceDisplayName(extension.lang, itemView.context)
+        binding.warning.text = when {
+            extension is Extension.Untrusted -> itemView.context.getString(R.string.ext_untrusted)
+            extension is Extension.Installed && extension.isObsolete -> itemView.context.getString(R.string.ext_obsolete)
+            extension is Extension.Installed && extension.isUnofficial -> itemView.context.getString(R.string.ext_unofficial)
+            extension.isNsfw && shouldLabelNsfw -> itemView.context.getString(R.string.ext_nsfw_short)
+            else -> ""
+        }.toUpperCase()
 
-        GlideApp.with(itemView.context).clear(image)
+        GlideApp.with(itemView.context).clear(binding.image)
         if (extension is Extension.Available) {
             GlideApp.with(itemView.context)
                 .load(extension.iconUrl)
-                .into(image)
+                .into(binding.image)
         } else {
-            extension.getApplicationIcon(itemView.context)?.let { image.setImageDrawable(it) }
+            extension.getApplicationIcon(itemView.context)?.let { binding.image.setImageDrawable(it) }
         }
         bindButton(item)
     }
 
     @Suppress("ResourceType")
-    fun bindButton(item: ExtensionItem) = with(ext_button) {
+    fun bindButton(item: ExtensionItem) = with(binding.extButton) {
         isEnabled = true
         isClickable = true
 

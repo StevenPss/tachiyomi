@@ -22,7 +22,6 @@ import eu.kanade.tachiyomi.util.lang.plusAssign
 import eu.kanade.tachiyomi.util.storage.DiskUtil
 import eu.kanade.tachiyomi.util.storage.saveTo
 import eu.kanade.tachiyomi.util.system.ImageUtil
-import java.io.File
 import kotlinx.coroutines.async
 import okhttp3.Response
 import rx.Observable
@@ -31,6 +30,7 @@ import rx.schedulers.Schedulers
 import rx.subscriptions.CompositeSubscription
 import timber.log.Timber
 import uy.kohesive.injekt.injectLazy
+import java.io.File
 
 /**
  * This class is the one in charge of downloading chapters.
@@ -137,9 +137,10 @@ class Downloader(
         } else {
             if (notifier.paused) {
                 notifier.paused = false
-                notifier.onDownloadPaused()
+                notifier.onPaused()
             } else {
-                notifier.dismiss()
+                notifier.dismissProgress()
+                notifier.onComplete()
             }
         }
     }
@@ -170,7 +171,7 @@ class Downloader(
                 .forEach { it.status = Download.NOT_DOWNLOADED }
         }
         queue.clear()
-        notifier.dismiss()
+        notifier.dismissProgress()
     }
 
     /**
@@ -231,13 +232,9 @@ class Downloader(
         val wasEmpty = queue.isEmpty()
         // Called in background thread, the operation can be slow with SAF.
         val chaptersWithoutDir = async {
-            val mangaDir = provider.findMangaDir(manga, source)
-
             chapters
-                // Avoid downloading chapters with the same name.
-                .distinctBy { it.name }
                 // Filter out those already downloaded.
-                .filter { mangaDir?.findFile(provider.getChapterDirName(it)) == null }
+                .filter { provider.findChapterDir(it, manga, source) == null }
                 // Add chapters to queue from the start.
                 .sortedByDescending { it.source_order }
         }
@@ -270,15 +267,16 @@ class Downloader(
      * @param download the chapter to be downloaded.
      */
     private fun downloadChapter(download: Download): Observable<Download> = Observable.defer {
-        val chapterDirname = provider.getChapterDirName(download.chapter)
         val mangaDir = provider.getMangaDir(download.manga, download.source)
 
-        if (DiskUtil.getAvailableStorageSpace(mangaDir) < MIN_DISK_SPACE) {
+        val availSpace = DiskUtil.getAvailableStorageSpace(mangaDir)
+        if (availSpace != -1L && availSpace < MIN_DISK_SPACE) {
             download.status = Download.ERROR
             notifier.onError(context.getString(R.string.download_insufficient_space), download.chapter.name)
             return@defer Observable.just(download)
         }
 
+        val chapterDirname = provider.getChapterDirName(download.chapter)
         val tmpDir = mangaDir.createDirectory(chapterDirname + TMP_DIR_SUFFIX)
 
         val pageListObservable = if (download.pages == null) {

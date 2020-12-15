@@ -11,11 +11,11 @@ import eu.kanade.tachiyomi.data.preference.PreferencesHelper
 import eu.kanade.tachiyomi.util.storage.getUriCompat
 import eu.kanade.tachiyomi.util.system.notificationBuilder
 import eu.kanade.tachiyomi.util.system.notificationManager
+import uy.kohesive.injekt.injectLazy
 import java.io.File
 import java.util.concurrent.TimeUnit
-import uy.kohesive.injekt.injectLazy
 
-internal class BackupNotifier(private val context: Context) {
+class BackupNotifier(private val context: Context) {
 
     private val preferences: PreferencesHelper by injectLazy()
 
@@ -65,10 +65,7 @@ internal class BackupNotifier(private val context: Context) {
 
         with(completeNotificationBuilder) {
             setContentTitle(context.getString(R.string.backup_created))
-
-            if (unifile.filePath != null) {
-                setContentText(unifile.filePath)
-            }
+            setContentText(unifile.filePath ?: unifile.name)
 
             // Clear old actions if they exist
             if (mActions.isNotEmpty()) {
@@ -149,7 +146,7 @@ internal class BackupNotifier(private val context: Context) {
                 val uri = destFile.getUriCompat(context)
 
                 addAction(
-                    R.drawable.nnf_ic_file_folder,
+                    R.drawable.ic_folder_24dp,
                     context.getString(R.string.action_open_log),
                     NotificationReceiver.openErrorLogPendingActivity(context, uri)
                 )

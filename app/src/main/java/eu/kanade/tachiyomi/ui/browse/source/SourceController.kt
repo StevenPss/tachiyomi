@@ -1,6 +1,8 @@
 package eu.kanade.tachiyomi.ui.browse.source
 
 import android.Manifest.permission.WRITE_EXTERNAL_STORAGE
+import android.app.Dialog
+import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
@@ -17,10 +19,13 @@ import eu.davidea.flexibleadapter.FlexibleAdapter
 import eu.davidea.flexibleadapter.items.IFlexible
 import eu.kanade.tachiyomi.R
 import eu.kanade.tachiyomi.data.preference.PreferencesHelper
+import eu.kanade.tachiyomi.data.preference.minusAssign
+import eu.kanade.tachiyomi.data.preference.plusAssign
 import eu.kanade.tachiyomi.databinding.SourceMainControllerBinding
 import eu.kanade.tachiyomi.source.CatalogueSource
 import eu.kanade.tachiyomi.source.LocalSource
 import eu.kanade.tachiyomi.source.Source
+import eu.kanade.tachiyomi.ui.base.controller.DialogController
 import eu.kanade.tachiyomi.ui.base.controller.NucleusController
 import eu.kanade.tachiyomi.ui.base.controller.requestPermissionsSafe
 import eu.kanade.tachiyomi.ui.base.controller.withFadeTransaction
@@ -39,15 +44,14 @@ import uy.kohesive.injekt.api.get
 /**
  * This controller shows and manages the different catalogues enabled by the user.
  * This controller should only handle UI actions, IO actions should be done by [SourcePresenter]
- * [SourceAdapter.OnBrowseClickListener] call function data on browse item click.
+ * [SourceAdapter.OnSourceClickListener] call function data on browse item click.
  * [SourceAdapter.OnLatestClickListener] call function data on latest item click
  */
 class SourceController :
     NucleusController<SourceMainControllerBinding, SourcePresenter>(),
     FlexibleAdapter.OnItemClickListener,
     FlexibleAdapter.OnItemLongClickListener,
-    SourceAdapter.OnBrowseClickListener,
-    SourceAdapter.OnLatestClickListener {
+    SourceAdapter.OnSourceClickListener {
 
     private val preferences: PreferencesHelper = Injekt.get()
 
@@ -88,7 +92,6 @@ class SourceController :
         // Create recycler and set adapter.
         binding.recycler.layoutManager = LinearLayoutManager(view.context)
         binding.recycler.adapter = adapter
-        binding.recycler.addItemDecoration(SourceDividerItemDecoration(view.context))
         adapter?.fastScroller = binding.fastScroller
 
         requestPermissionsSafe(arrayOf(WRITE_EXTERNAL_STORAGE), 301)
@@ -132,38 +135,33 @@ class SourceController :
         val items = mutableListOf(
             Pair(
                 activity.getString(if (isPinned) R.string.action_unpin else R.string.action_pin),
-                { pinSource(item.source, isPinned) }
+                { toggleSourcePin(item.source) }
             )
         )
         if (item.source !is LocalSource) {
-            items.add(Pair(activity.getString(R.string.action_disable), { disableSource(item.source) }))
+            items.add(
+                Pair(
+                    activity.getString(R.string.action_disable),
+                    { disableSource(item.source) }
+                )
+            )
         }
 
-        MaterialDialog(activity)
-            .title(text = item.source.name)
-            .listItems(
-                items = items.map { it.first },
-                waitForPositiveButton = false
-            ) { dialog, which, _ ->
-                items[which].second()
-                dialog.dismiss()
-            }
-            .show()
+        SourceOptionsDialog(item.source.toString(), items).showDialog(router)
     }
 
     private fun disableSource(source: Source) {
-        val current = preferences.disabledSources().get()
-        preferences.disabledSources().set(current + source.id.toString())
+        preferences.disabledSources() += source.id.toString()
 
         presenter.updateSources()
     }
 
-    private fun pinSource(source: Source, isPinned: Boolean) {
-        val current = preferences.pinnedSources().get()
+    private fun toggleSourcePin(source: Source) {
+        val isPinned = source.id.toString() in preferences.pinnedSources().get()
         if (isPinned) {
-            preferences.pinnedSources().set(current - source.id.toString())
+            preferences.pinnedSources() -= source.id.toString()
         } else {
-            preferences.pinnedSources().set(current + source.id.toString())
+            preferences.pinnedSources() += source.id.toString()
         }
 
         presenter.updateSources()
@@ -185,10 +183,20 @@ class SourceController :
     }
 
     /**
+     * Called when pin icon is clicked in [SourceAdapter]
+     */
+    override fun onPinClick(position: Int) {
+        val item = adapter?.getItem(position) as? SourceItem ?: return
+        toggleSourcePin(item.source)
+    }
+
+    /**
      * Opens a catalogue with the given controller.
      */
     private fun openSource(source: CatalogueSource, controller: BrowseSourceController) {
-        preferences.lastUsedSource().set(source.id)
+        if (!preferences.incognitoMode().get()) {
+            preferences.lastUsedSource().set(source.id)
+        }
         parentController!!.router.pushController(controller.withFadeTransaction())
     }
 
@@ -257,6 +265,29 @@ class SourceController :
         if (item != null) {
             adapter?.addScrollableHeader(item)
             adapter?.addScrollableHeader(LangItem(SourcePresenter.LAST_USED_KEY))
+        }
+    }
+
+    class SourceOptionsDialog(bundle: Bundle? = null) : DialogController(bundle) {
+
+        private lateinit var source: String
+        private lateinit var items: List<Pair<String, () -> Unit>>
+
+        constructor(source: String, items: List<Pair<String, () -> Unit>>) : this() {
+            this.source = source
+            this.items = items
+        }
+
+        override fun onCreateDialog(savedViewState: Bundle?): Dialog {
+            return MaterialDialog(activity!!)
+                .title(text = source)
+                .listItems(
+                    items = items.map { it.first },
+                    waitForPositiveButton = false
+                ) { dialog, which, _ ->
+                    items[which].second()
+                    dialog.dismiss()
+                }
         }
     }
 }

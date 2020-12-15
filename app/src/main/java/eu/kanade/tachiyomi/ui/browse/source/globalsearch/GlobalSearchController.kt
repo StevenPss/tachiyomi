@@ -8,9 +8,11 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.widget.SearchView
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import eu.kanade.tachiyomi.R
 import eu.kanade.tachiyomi.data.database.models.Manga
+import eu.kanade.tachiyomi.data.preference.PreferencesHelper
 import eu.kanade.tachiyomi.databinding.GlobalSearchControllerBinding
 import eu.kanade.tachiyomi.source.CatalogueSource
 import eu.kanade.tachiyomi.ui.base.controller.NucleusController
@@ -22,6 +24,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import reactivecircus.flowbinding.appcompat.QueryTextEvent
 import reactivecircus.flowbinding.appcompat.queryTextEvents
+import uy.kohesive.injekt.injectLazy
 
 /**
  * This controller shows and manages the different search result in global search.
@@ -34,6 +37,8 @@ open class GlobalSearchController(
 ) : NucleusController<GlobalSearchControllerBinding, GlobalSearchPresenter>(),
     GlobalSearchCardAdapter.OnMangaClickListener,
     GlobalSearchAdapter.OnTitleClickListener {
+
+    private val preferences: PreferencesHelper by injectLazy()
 
     /**
      * Adapter containing search results grouped by lang.
@@ -103,17 +108,19 @@ open class GlobalSearchController(
         val searchView = searchItem.actionView as SearchView
         searchView.maxWidth = Int.MAX_VALUE
 
-        searchItem.setOnActionExpandListener(object : MenuItem.OnActionExpandListener {
-            override fun onMenuItemActionExpand(item: MenuItem?): Boolean {
-                searchView.onActionViewExpanded() // Required to show the query in the view
-                searchView.setQuery(presenter.query, false)
-                return true
-            }
+        searchItem.setOnActionExpandListener(
+            object : MenuItem.OnActionExpandListener {
+                override fun onMenuItemActionExpand(item: MenuItem?): Boolean {
+                    searchView.onActionViewExpanded() // Required to show the query in the view
+                    searchView.setQuery(presenter.query, false)
+                    return true
+                }
 
-            override fun onMenuItemActionCollapse(item: MenuItem?): Boolean {
-                return true
+                override fun onMenuItemActionCollapse(item: MenuItem?): Boolean {
+                    return true
+                }
             }
-        })
+        )
 
         searchView.queryTextEvents()
             .filterIsInstance<QueryTextEvent.QuerySubmitted>()
@@ -180,7 +187,21 @@ open class GlobalSearchController(
      * @param searchResult result of search.
      */
     fun setItems(searchResult: List<GlobalSearchItem>) {
+        if (searchResult.isEmpty() && preferences.searchPinnedSourcesOnly()) {
+            binding.emptyView.show(R.string.no_pinned_sources)
+        } else {
+            binding.emptyView.hide()
+        }
+
         adapter?.updateDataSet(searchResult)
+
+        val progress = searchResult.mapNotNull { it.results }.size.toDouble() / searchResult.size
+        if (progress < 1) {
+            binding.progressBar.isVisible = true
+            binding.progressBar.progress = (progress * 100).toInt()
+        } else {
+            binding.progressBar.isVisible = false
+        }
     }
 
     /**

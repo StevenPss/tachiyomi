@@ -13,6 +13,7 @@ import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.core.view.isVisible
 import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.engine.GlideException
@@ -33,15 +34,13 @@ import eu.kanade.tachiyomi.ui.reader.viewer.pager.PagerConfig.ZoomType
 import eu.kanade.tachiyomi.ui.webview.WebViewActivity
 import eu.kanade.tachiyomi.util.system.ImageUtil
 import eu.kanade.tachiyomi.util.system.dpToPx
-import eu.kanade.tachiyomi.util.view.gone
-import eu.kanade.tachiyomi.util.view.visible
 import eu.kanade.tachiyomi.widget.ViewPagerAdapter
-import java.io.InputStream
-import java.util.concurrent.TimeUnit
 import rx.Observable
 import rx.Subscription
 import rx.android.schedulers.AndroidSchedulers
 import rx.schedulers.Schedulers
+import java.io.InputStream
+import java.util.concurrent.TimeUnit
 
 /**
  * View of the ViewPager that contains a page of a chapter.
@@ -196,37 +195,37 @@ class PagerPageHolder(
      * Called when the page is queued.
      */
     private fun setQueued() {
-        progressBar.visible()
-        retryButton?.gone()
-        decodeErrorLayout?.gone()
+        progressBar.isVisible = true
+        retryButton?.isVisible = false
+        decodeErrorLayout?.isVisible = false
     }
 
     /**
      * Called when the page is loading.
      */
     private fun setLoading() {
-        progressBar.visible()
-        retryButton?.gone()
-        decodeErrorLayout?.gone()
+        progressBar.isVisible = true
+        retryButton?.isVisible = false
+        decodeErrorLayout?.isVisible = false
     }
 
     /**
      * Called when the page is downloading.
      */
     private fun setDownloading() {
-        progressBar.visible()
-        retryButton?.gone()
-        decodeErrorLayout?.gone()
+        progressBar.isVisible = true
+        retryButton?.isVisible = false
+        decodeErrorLayout?.isVisible = false
     }
 
     /**
      * Called when the page is ready.
      */
     private fun setImage() {
-        progressBar.visible()
+        progressBar.isVisible = true
         progressBar.completeAndFadeOut()
-        retryButton?.gone()
-        decodeErrorLayout?.gone()
+        retryButton?.isVisible = false
+        decodeErrorLayout?.isVisible = false
 
         unsubscribeReadImageHeader()
         val streamFn = page.stream ?: return
@@ -258,23 +257,23 @@ class PagerPageHolder(
      * Called when the page has an error.
      */
     private fun setError() {
-        progressBar.gone()
-        initRetryButton().visible()
+        progressBar.isVisible = false
+        initRetryButton().isVisible = true
     }
 
     /**
      * Called when the image is decoded and going to be displayed.
      */
     private fun onImageDecoded() {
-        progressBar.gone()
+        progressBar.isVisible = false
     }
 
     /**
      * Called when an image fails to decode.
      */
     private fun onImageDecodeError() {
-        progressBar.gone()
-        initDecodeErrorLayout().visible()
+        progressBar.isVisible = false
+        initDecodeErrorLayout().isVisible = true
     }
 
     /**
@@ -308,20 +307,22 @@ class PagerPageHolder(
             setMinimumDpi(90)
             setMinimumTileDpi(180)
             setCropBorders(config.imageCropBorders)
-            setOnImageEventListener(object : SubsamplingScaleImageView.DefaultOnImageEventListener() {
-                override fun onReady() {
-                    when (config.imageZoomType) {
-                        ZoomType.Left -> setScaleAndCenter(scale, PointF(0f, 0f))
-                        ZoomType.Right -> setScaleAndCenter(scale, PointF(sWidth.toFloat(), 0f))
-                        ZoomType.Center -> setScaleAndCenter(scale, center.also { it?.y = 0f })
+            setOnImageEventListener(
+                object : SubsamplingScaleImageView.DefaultOnImageEventListener() {
+                    override fun onReady() {
+                        when (config.imageZoomType) {
+                            ZoomType.Left -> setScaleAndCenter(scale, PointF(0f, 0f))
+                            ZoomType.Right -> setScaleAndCenter(scale, PointF(sWidth.toFloat(), 0f))
+                            ZoomType.Center -> setScaleAndCenter(scale, center.also { it?.y = 0f })
+                        }
+                        onImageDecoded()
                     }
-                    onImageDecoded()
-                }
 
-                override fun onImageLoadError(e: Exception) {
-                    onImageDecodeError()
+                    override fun onImageLoadError(e: Exception) {
+                        onImageDecodeError()
+                    }
                 }
-            })
+            )
         }
         addView(subsamplingImageView)
         return subsamplingImageView!!
@@ -339,16 +340,18 @@ class PagerPageHolder(
             setZoomTransitionDuration(viewer.config.doubleTapAnimDuration)
             setScaleLevels(1f, 2f, 3f)
             // Force 2 scale levels on double tap
-            setOnDoubleTapListener(object : GestureDetector.SimpleOnGestureListener() {
-                override fun onDoubleTap(e: MotionEvent): Boolean {
-                    if (scale > 1f) {
-                        setScale(1f, e.x, e.y, true)
-                    } else {
-                        setScale(2f, e.x, e.y, true)
+            setOnDoubleTapListener(
+                object : GestureDetector.SimpleOnGestureListener() {
+                    override fun onDoubleTap(e: MotionEvent): Boolean {
+                        if (scale > 1f) {
+                            setScale(1f, e.x, e.y, true)
+                        } else {
+                            setScale(2f, e.x, e.y, true)
+                        }
+                        return true
                     }
-                    return true
                 }
-            })
+            )
         }
         addView(imageView)
         return imageView!!
@@ -438,31 +441,33 @@ class PagerPageHolder(
             .skipMemoryCache(true)
             .diskCacheStrategy(DiskCacheStrategy.NONE)
             .transition(DrawableTransitionOptions.with(NoTransition.getFactory()))
-            .listener(object : RequestListener<Drawable> {
-                override fun onLoadFailed(
-                    e: GlideException?,
-                    model: Any?,
-                    target: Target<Drawable>?,
-                    isFirstResource: Boolean
-                ): Boolean {
-                    onImageDecodeError()
-                    return false
-                }
-
-                override fun onResourceReady(
-                    resource: Drawable?,
-                    model: Any?,
-                    target: Target<Drawable>?,
-                    dataSource: DataSource?,
-                    isFirstResource: Boolean
-                ): Boolean {
-                    if (resource is GifDrawable) {
-                        resource.setLoopCount(GifDrawable.LOOP_INTRINSIC)
+            .listener(
+                object : RequestListener<Drawable> {
+                    override fun onLoadFailed(
+                        e: GlideException?,
+                        model: Any?,
+                        target: Target<Drawable>?,
+                        isFirstResource: Boolean
+                    ): Boolean {
+                        onImageDecodeError()
+                        return false
                     }
-                    onImageDecoded()
-                    return false
+
+                    override fun onResourceReady(
+                        resource: Drawable?,
+                        model: Any?,
+                        target: Target<Drawable>?,
+                        dataSource: DataSource?,
+                        isFirstResource: Boolean
+                    ): Boolean {
+                        if (resource is GifDrawable) {
+                            resource.setLoopCount(GifDrawable.LOOP_INTRINSIC)
+                        }
+                        onImageDecoded()
+                        return false
+                    }
                 }
-            })
+            )
             .into(this)
     }
 }

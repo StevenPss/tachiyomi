@@ -13,7 +13,6 @@ import android.content.pm.PackageManager
 import android.content.res.Resources
 import android.graphics.Color
 import android.net.ConnectivityManager
-import android.net.Uri
 import android.os.PowerManager
 import android.view.View
 import android.widget.Toast
@@ -23,11 +22,15 @@ import androidx.annotation.StringRes
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
+import androidx.core.content.getSystemService
+import androidx.core.graphics.alpha
+import androidx.core.graphics.blue
+import androidx.core.graphics.green
+import androidx.core.graphics.red
+import androidx.core.net.toUri
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
-import com.nononsenseapps.filepicker.FilePickerActivity
 import eu.kanade.tachiyomi.R
 import eu.kanade.tachiyomi.util.lang.truncateCenter
-import eu.kanade.tachiyomi.widget.CustomLayoutPickerActivity
 import kotlin.math.roundToInt
 
 /**
@@ -59,7 +62,7 @@ fun Context.toast(text: String?, duration: Int = Toast.LENGTH_SHORT) {
 fun Context.copyToClipboard(label: String, content: String) {
     if (content.isBlank()) return
 
-    val clipboard = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+    val clipboard = getSystemService<ClipboardManager>()!!
     clipboard.setPrimaryClip(ClipData.newPlainText(label, content))
 
     toast(getString(R.string.copied_to_clipboard, content.truncateCenter(50)))
@@ -94,19 +97,6 @@ fun Context.notification(channelId: String, block: (NotificationCompat.Builder.(
 }
 
 /**
- * Helper method to construct an Intent to use a custom file picker.
- * @param currentDir the path the file picker will open with.
- * @return an Intent to start the file picker activity.
- */
-fun Context.getFilePicker(currentDir: String): Intent {
-    return Intent(this, CustomLayoutPickerActivity::class.java)
-        .putExtra(FilePickerActivity.EXTRA_ALLOW_MULTIPLE, false)
-        .putExtra(FilePickerActivity.EXTRA_ALLOW_CREATE_DIR, true)
-        .putExtra(FilePickerActivity.EXTRA_MODE, FilePickerActivity.MODE_DIR)
-        .putExtra(FilePickerActivity.EXTRA_START_PATH, currentDir)
-}
-
-/**
  * Checks if the give permission is granted.
  *
  * @param permission the permission to check.
@@ -126,11 +116,8 @@ fun Context.hasPermission(permission: String) = ContextCompat.checkSelfPermissio
     typedArray.recycle()
 
     if (alphaFactor < 1f) {
-        val alpha = (Color.alpha(color) * alphaFactor).roundToInt()
-        val red = Color.red(color)
-        val green = Color.green(color)
-        val blue = Color.blue(color)
-        return Color.argb(alpha, red, green, blue)
+        val alpha = (color.alpha * alphaFactor).roundToInt()
+        return Color.argb(alpha, color.red, color.green, color.blue)
     }
 
     return color
@@ -239,11 +226,10 @@ fun Context.isServiceRunning(serviceClass: Class<*>): Boolean {
  */
 fun Context.openInBrowser(url: String) {
     try {
-        val parsedUrl = Uri.parse(url)
         val intent = CustomTabsIntent.Builder()
             .setToolbarColor(getResourceColor(R.attr.colorPrimary))
             .build()
-        intent.launchUrl(this, parsedUrl)
+        intent.launchUrl(this, url.toUri())
     } catch (e: Exception) {
         toast(e.message)
     }

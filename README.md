@@ -1,6 +1,6 @@
 | Build | Stable | Weekly Preview | Contribute | Support Server |
 |-------|----------|---------|------------|---------|
-| [![Travis](https://img.shields.io/travis/inorichi/tachiyomi.svg)](https://travis-ci.org/inorichi/tachiyomi) | [![stable release](https://img.shields.io/github/release/inorichi/tachiyomi.svg?maxAge=3600&label=download)](https://github.com/inorichi/tachiyomi/releases) | [![latest weekly build](https://img.shields.io/badge/download-latest%20build-blue.svg)](http://tachiyomi.kanade.eu/latest) | [![Translation status](https://hosted.weblate.org/widgets/tachiyomi/-/svg-badge.svg)](https://hosted.weblate.org/engage/tachiyomi/?utm_source=widget) | [![Discord](https://img.shields.io/discord/349436576037732353.svg)](https://discord.gg/tachiyomi) |
+| ![CI](https://github.com/inorichi/tachiyomi/workflows/CI/badge.svg?branch=dev&event=push) | [![stable release](https://img.shields.io/github/release/inorichi/tachiyomi.svg?maxAge=3600&label=download)](https://github.com/inorichi/tachiyomi/releases) | [![latest weekly build](https://img.shields.io/github/v/release/tachiyomiorg/android-app-preview.svg?maxAge=3600&label=download)](https://github.com/tachiyomiorg/android-app-preview/releases) | [![Translation status](https://hosted.weblate.org/widgets/tachiyomi/-/svg-badge.svg)](https://hosted.weblate.org/engage/tachiyomi/?utm_source=widget) | [![Discord](https://img.shields.io/discord/349436576037732353.svg)](https://discord.gg/tachiyomi) |
 
 
 # ![app icon](./.github/readme-images/app-icon.png)Tachiyomi
@@ -23,7 +23,7 @@ Features include:
 ## Download
 Get the app from our [releases page](https://github.com/inorichi/tachiyomi/releases).
 
-If you want to try new features before they get to the stable release, you can download the preview version [here](http://tachiyomi.kanade.eu/latest).
+If you want to try new features before they get to the stable release, you can download the preview version [here](https://github.com/tachiyomiorg/android-app-preview/releases).
 
 ## Issues, Feature Requests and Contributing
 
@@ -31,14 +31,14 @@ Please make sure to read the full guidelines. Your issue may be closed without w
 
 <details><summary>Issues</summary>
 
-1. **Before reporting a new issue, take a look at the [FAQ](https://github.com/inorichi/tachiyomi/wiki/FAQ), the [changelog](https://github.com/inorichi/tachiyomi/releases) and the already opened [issues](https://github.com/inorichi/tachiyomi/issues).**
+1. **Before reporting a new issue, take a look at the [FAQ](https://tachiyomi.org/help/faq/), the [changelog](https://github.com/inorichi/tachiyomi/releases) and the already opened [issues](https://github.com/inorichi/tachiyomi/issues).**
 2. If you are unsure, ask here: [![Discord](https://img.shields.io/discord/349436576037732353.svg)](https://discord.gg/tachiyomi)
 
 </details>
 
 <details><summary>Bugs</summary>
 
-* Include version (Setting > About > Version)
+* Include version (More > About > Version)
  * If not latest, try updating, it may have already been solved
  * Preview version is equal to the number of commits as seen in the main page
 * Include steps to reproduce (if not obvious from description)
@@ -58,7 +58,7 @@ DON'T: https://github.com/inorichi/tachiyomi/issues/75
 * Write a detailed issue, explaining what it should do or how. Avoid writing just "like X app does"
 * Include screenshot (if needed)
 
-Catalogue requests should be created at https://github.com/inorichi/tachiyomi-extensions, they do not belong in this repository.
+Source requests should be created at https://github.com/inorichi/tachiyomi-extensions, they do not belong in this repository.
 </details>
 
 ## FAQ

@@ -21,7 +21,6 @@
     <string name="action_filter_downloaded">Nedladdat</string>
     <string name="action_filter_bookmarked">Bokmärkt</string>
     <string name="action_filter_unread">Oläst</string>
-    <string name="action_filter_read">Läst</string>
     <string name="action_filter_empty">Ta bort filtret</string>
     <string name="action_sort_alpha">Alfabetiskt</string>
     <string name="action_sort_total">Totalt kapitel</string>
@@ -138,8 +137,8 @@
     <string name="pref_double_tap_anim_speed">Animationshastighet för dubbelklick</string>
     <string name="pref_show_page_number">Visa sidnummer</string>
     <string name="pref_crop_borders">Beskär kanter</string>
-    <string name="pref_custom_brightness">Använd egen ljusstyrka</string>
-    <string name="pref_custom_color_filter">Använd eget färgfilter</string>
+    <string name="pref_custom_brightness">Anpassad ljusstyrka</string>
+    <string name="pref_custom_color_filter">Anpassad färgfilter</string>
     <string name="pref_keep_screen_on">Håll skärmen på</string>
     <string name="pref_reader_navigation">Navigering</string>
     <string name="pref_read_with_volume_keys">Volymknapparna</string>
@@ -182,8 +181,8 @@
     <string name="color_filter_a_value">A</string>
     <string name="pref_download_directory">Nedladdningsplats</string>
     <string name="pref_download_only_over_wifi">Ladda bara ner över WiFi</string>
-    <string name="pref_remove_after_marked_as_read">Ta bort när markerat som läst</string>
-    <string name="pref_remove_after_read">Ta bort efter läsning</string>
+    <string name="pref_remove_after_marked_as_read">Efter manuellt markerad som läst</string>
+    <string name="pref_remove_after_read">Efter läsning</string>
     <string name="custom_dir">Anpassad plats</string>
     <string name="disabled">Inaktiverad</string>
     <string name="last_read_chapter">Senaste lästa kapitel</string>
@@ -203,7 +202,6 @@
     <string name="pref_backup_service_category">Automatiska säkerhetskopior</string>
     <string name="pref_backup_interval">Säkerhetskopieringsfrekvens</string>
     <string name="pref_backup_slots">Maximala säkerhetskopior</string>
-    <string name="source_not_found">Källan hittades inte</string>
     <string name="backup_created">Säkerhetskopia skapad</string>
     <string name="restore_completed">Återställning slutförd</string>
     <string name="backup_restore_content">Återställning använder källor för att hämta data, data kostnader kan tillkomma. 
@@ -240,8 +238,6 @@
     <string name="library_search_hint">Titel eller författare…</string>
     <string name="updating_category">Uppdaterar kategori</string>
     <string name="local_source_badge">Lokal</string>
-    <string name="confirm_delete_manga">Är du säker på att du vill ta bort vald manga\?</string>
-    <string name="also_delete_chapters">Radera även nedladdade kapitel</string>
     <string name="source_requires_login">Denna källan kräver att du loggar in</string>
     <string name="select_source">Välj en källa</string>
     <string name="no_valid_sources">Vänligen aktivera minst en giltig källa</string>
@@ -348,7 +344,6 @@
     <string name="notification_no_connection_body">Anslutningen är inte tillänglig</string>
     <string name="file_select_cover">Välj omslagsbild</string>
     <string name="file_select_backup">Välj säkerhetskopia</string>
-    <string name="file_select_icon">Välj genvägsikon</string>
     <string name="update_check_confirm">Ladda ner</string>
     <string name="update_check_ignore">Ignorera</string>
     <string name="update_check_no_new_updates">Inga nya uppdateringar tillgängliga</string>
@@ -374,7 +369,6 @@
     <string name="download_notifier_download_paused">Nedladdning pausad</string>
     <string name="channel_common">Vanlig</string>
     <string name="channel_library">Bibliotek</string>
-    <string name="channel_downloader">Nedladdare</string>
     <string name="action_open_in_web_view">Öppna i WebView</string>
     <string name="pref_true_color">32-bitars färg</string>
     <string name="pref_skip_read_chapters">Skippa lästa kapitel</string>
@@ -453,14 +447,13 @@
     <string name="pref_disable_battery_optimization">Inaktivera batterioptimering</string>
     <string name="pref_disable_battery_optimization_summary">Hjälper till med uppdateringar och säkerhetskopior i bakgrunden</string>
     <string name="battery_optimization_disabled">Batterioptimering är redan inaktiverat</string>
-    <string name="email">E-postaddress</string>
+    <string name="email">E-postadress</string>
     <string name="pref_always_show_chapter_transition">Visa alltid kapitelövergång</string>
     <plurals name="notification_new_chapters_summary">
         <item quantity="one">För 1 titel</item>
         <item quantity="other">För %d titlar</item>
     </plurals>
     <string name="notices">Byggmeddelanden</string>
-    <string name="changelog">Ändringslogg</string>
     <string name="pref_theme_light">Ljust tema</string>
     <string name="theme_light_default">Standard</string>
     <string name="theme_light_blue">Ljusblå</string>
@@ -498,10 +491,8 @@
     <string name="action_select_inverse">Välj omvänd</string>
     <string name="manga_info_collapse">Mindre</string>
     <string name="manga_info_expand">Mer</string>
-    <string name="manga_info_about_label">Info</string>
     <string name="pref_confirm_exit">Bekräfta utgång</string>
     <string name="confirm_exit">Tryck tillbaka igen för att gå ur</string>
-    <string name="channel_backup_restore">Säkerhetskopiering och återställning</string>
     <string name="information_webview_required">WebView krävs för Tachiyomi</string>
     <string name="recent_manga_time">Kapitel %1$s - %2$s</string>
     <string name="error_invalid_date_supplied">Ogiltigt datum har angetts</string>
@@ -520,8 +511,6 @@
     <string name="restore_duration">%02d minuter, %02d sekunder</string>
     <string name="label_downloaded_only">Endast nedladdat</string>
     <string name="downloaded_only_summary">Filtrerar all manga i ditt bibliotek</string>
-    <string name="channel_backup_restore_complete">Färdig</string>
-    <string name="channel_backup_restore_progress">Förlopp</string>
     <plurals name="download_queue_summary">
         <item quantity="one">1 återstående</item>
         <item quantity="other">%1$s återstående</item>
@@ -542,7 +531,7 @@
     <string name="battery_optimization_setting_activity_not_found">Det gick inte att öppna enhetsinställningarna</string>
     <string name="action_display_unread_badge">Olästa märken</string>
     <string name="pref_refresh_library_covers">Uppdatera bibliotekets manga omslag</string>
-    <string name="tracking_info">Envägssynkronisering för att uppdatera kapitelförloppet i spårningstjänster. Ställ in spårning för enskilda manga från deras spårningsflikar.</string>
+    <string name="tracking_info">Envägssynkronisering för att uppdatera kapitelförloppet i spårningstjänster. Ställ in spårning för enskilda manga från spårningsknappen under manga info.</string>
     <plurals name="notification_update_error">
         <item quantity="one">1 uppdatering misslyckades</item>
         <item quantity="other">%1$d uppdateringar misslyckades</item>
@@ -583,11 +572,74 @@
     </plurals>
     <string name="unknown_status">Okänd status</string>
     <string name="unknown_author">Okänd författare</string>
-    <string name="pref_dns_over_https_summary">Kräver omstart av appen för att börja gälla</string>
+    <string name="requires_app_restart">Kräver omstart av appen för att börja gälla</string>
     <string name="pref_dns_over_https" translatable="false">DNS över HTTPS (Cloudflare)</string>
     <string name="label_network">Nätverk</string>
     <string name="pref_jump_to_chapters">Hoppa till kapitel vid öppning</string>
     <string name="action_sort_descending">Fallande</string>
     <string name="action_disable">Inaktivera</string>
     <string name="action_open_in_settings">Öppna i Inställningar</string>
+    <string name="download_insufficient_space">Det gick inte att ladda ner kapitelt på grund av lågt diskutrymme</string>
+    <string name="action_global_search_query">Sök efter \"%1$s\" globalt</string>
+    <string name="updated_version">Uppdaterad till v%1$s</string>
+    <string name="whats_new">Vad är nytt</string>
+    <string name="pref_category_reading_mode">Läsläge</string>
+    <string name="pref_category_locale">Språk</string>
+    <string name="pref_category_theme">Tema</string>
+    <string name="action_download_unread">Ladda ner olästa kapitel</string>
+    <string name="action_sort_date_added">Datum tillagd</string>
+    <string name="group_backup_restore">Säkerhetskopiering och återställning</string>
+    <string name="group_downloader">Nedladdningar</string>
+    <string name="channel_complete">Färdig</string>
+    <string name="channel_progress">Förlopp</string>
+    <string name="download_notifier_download_finish">Nedladdningen slutförd</string>
+    <plurals name="num_trackers">
+        <item quantity="one">1 tracker</item>
+        <item quantity="other">%d trackers</item>
+    </plurals>
+    <string name="no_pinned_sources">Du har inga fästa källor</string>
+    <string name="pref_allow_nsfw_sources_blocked">Dölj</string>
+    <string name="pref_allow_nsfw_sources_allowed_multisource">Dölj i källor men visa i tilläggslistan</string>
+    <string name="pref_allow_nsfw_sources_allowed">Visa</string>
+    <string name="pref_allow_nsfw_sources">18+ källor</string>
+    <string name="pref_remove_bookmarked_chapters">Ta bort bokmärkta kapitel</string>
+    <string name="pref_category_delete_chapters">Ta bort kapitel</string>
+    <string name="ext_nsfw_warning">Kan innehålla 18+ innehåll</string>
+    <string name="ext_nsfw_short">18+</string>
+    <string name="backup_restore_missing_trackers">Trackers som inte har loggats in:</string>
+    <string name="parental_controls_info">Detta förhindrar inte inofficiella eller potentiellt felaktigt flaggade tillägg från att visa 18+ innehåll i appen.</string>
+    <string name="channel_errors">Fel</string>
+    <string name="chapter_settings_updated">Uppdaterade standardinställningar för kapitel</string>
+    <string name="confirm_set_chapter_settings">Vill du spara de här inställningarna som standard\?</string>
+    <plurals name="missing_chapters_warning">
+        <item quantity="one">Det saknas 1 kapitel</item>
+        <item quantity="other">Det saknas %d kapitel</item>
+    </plurals>
+    <string name="share_page_info">%1$s: %2$s, sida %3$d</string>
+    <string name="no_chapters_error">Inga kapitel hittades</string>
+    <string name="set_chapter_settings_as_default">Ange som standard</string>
+    <string name="also_set_chapter_settings_for_library">Gäller även all manga i biblioteket</string>
+    <string name="chapter_settings">Kapitelinställningar</string>
+    <string name="action_web_view">WebView</string>
+    <string name="downloaded_chapters">Nedladdade kapitel</string>
+    <string name="manga_from_library">Manga från biblioteket</string>
+    <string name="pref_incognito_mode_summary">Pausar läshistoriken</string>
+    <string name="pref_incognito_mode">Inkognitoläge</string>
+    <string name="pref_clear_history_summary">Radera läshistorik för all manga</string>
+    <string name="pref_clear_history">Rensa historik</string>
+    <string name="clear_history_confirmation">Är du säker\? All historik kommer att försvinna.</string>
+    <string name="clear_history_completed">Historiken har tagits bort</string>
+    <string name="pref_hide_bottom_bar_on_scroll">Dölj navigationsfältet vid scroll</string>
+    <string name="action_search_settings">Sök inställningar</string>
+    <string name="spen_next_page">Nästa sida</string>
+    <string name="spen_previous_page">Föregående sida</string>
+    <string name="full_restore_offline">Återställ offline, klar snabbt men innehåller bara vad din säkerhetskopia har</string>
+    <string name="full_restore_online">Återställ online, mycket segare men ger dig mer uppdaterad infomration och kapitel</string>
+    <string name="full_restore_mode">Nätverksläge</string>
+    <string name="pref_create_legacy_backup_summary">Kan används i äldre versioner av Tachiyomi</string>
+    <string name="migration_help_guide">Guide för källmigrering</string>
+    <string name="invalid_backup_file_type">Ogiltig säkerhetskopia: %1$s</string>
+    <string name="pref_backup_auto_create_legacy">Skapa också äldre säkerhetskopia</string>
+    <string name="pref_create_legacy_backup">Skapa äldre säkerhetskopia</string>
+    <string name="pref_category_nsfw_content">18+ innehåll</string>
 </resources>

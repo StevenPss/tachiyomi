@@ -11,7 +11,9 @@ object WebViewUtil {
         Regex(""".*Chrome/(\d+)\..*""")
     }
 
-    const val MINIMUM_WEBVIEW_VERSION = 80
+    const val REQUESTED_WITH = "com.android.browser"
+
+    const val MINIMUM_WEBVIEW_VERSION = 86
 
     fun supportsWebView(context: Context): Boolean {
         try {

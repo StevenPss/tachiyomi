@@ -27,9 +27,6 @@ import eu.kanade.tachiyomi.util.lang.takeBytes
 import eu.kanade.tachiyomi.util.storage.DiskUtil
 import eu.kanade.tachiyomi.util.system.ImageUtil
 import eu.kanade.tachiyomi.util.updateCoverLastModified
-import java.io.File
-import java.util.Date
-import java.util.concurrent.TimeUnit
 import rx.Completable
 import rx.Observable
 import rx.Subscription
@@ -38,6 +35,9 @@ import rx.schedulers.Schedulers
 import timber.log.Timber
 import uy.kohesive.injekt.Injekt
 import uy.kohesive.injekt.api.get
+import java.io.File
+import java.util.Date
+import java.util.concurrent.TimeUnit
 
 /**
  * Presenter used by the activity to perform background operations.
@@ -133,6 +133,13 @@ class ReaderPresenter(
         }.map(::ReaderChapter)
     }
 
+    private var hasTrackers: Boolean = false
+    private val checkTrackers: (Manga) -> Unit = { manga ->
+        val tracks = db.getTracks(manga).executeAsBlocking()
+
+        hasTrackers = tracks.size > 0
+    }
+
     /**
      * Called when the presenter is created. It retrieves the saved active chapter if the process
      * was restored.
@@ -223,6 +230,8 @@ class ReaderPresenter(
 
         this.manga = manga
         if (chapterId == -1L) chapterId = initialChapterId
+
+        checkTrackers(manga)
 
         val context = Injekt.get<Application>()
         val source = sourceManager.getOrStub(manga.source)
@@ -357,16 +366,28 @@ class ReaderPresenter(
 
         // Save last page read and mark as read if needed
         selectedChapter.chapter.last_page_read = page.index
-        if (selectedChapter.pages?.lastIndex == page.index) {
+        val shouldTrack = !preferences.incognitoMode().get() || hasTrackers
+        if (selectedChapter.pages?.lastIndex == page.index && shouldTrack) {
             selectedChapter.chapter.read = true
             updateTrackChapterRead(selectedChapter)
             deleteChapterIfNeeded(selectedChapter)
+            deleteChapterFromDownloadQueue(currentChapters.currChapter)
         }
 
         if (selectedChapter != currentChapters.currChapter) {
             Timber.d("Setting ${selectedChapter.chapter.url} as active")
             onChapterChanged(currentChapters.currChapter)
             loadNewChapter(selectedChapter)
+        }
+    }
+
+    /**
+     * Removes [currentChapter] from download queue
+     * if setting is enabled and [currentChapter] is queued for download
+     */
+    private fun deleteChapterFromDownloadQueue(currentChapter: ReaderChapter) {
+        downloadManager.getChapterDownloadOrNull(currentChapter.chapter)?.let { download ->
+            downloadManager.deletePendingDownload(download)
         }
     }
 
@@ -397,23 +418,28 @@ class ReaderPresenter(
 
     /**
      * Saves this [chapter] progress (last read page and whether it's read).
+     * If incognito mode isn't on or has at least 1 tracker
      */
     private fun saveChapterProgress(chapter: ReaderChapter) {
-        db.updateChapterProgress(chapter.chapter).asRxCompletable()
-            .onErrorComplete()
-            .subscribeOn(Schedulers.io())
-            .subscribe()
+        if (!preferences.incognitoMode().get() || hasTrackers) {
+            db.updateChapterProgress(chapter.chapter).asRxCompletable()
+                .onErrorComplete()
+                .subscribeOn(Schedulers.io())
+                .subscribe()
+        }
     }
 
     /**
-     * Saves this [chapter] last read history.
+     * Saves this [chapter] last read history if incognito mode isn't on.
      */
     private fun saveChapterHistory(chapter: ReaderChapter) {
-        val history = History.create(chapter.chapter).apply { last_read = Date().time }
-        db.updateHistoryLastRead(history).asRxCompletable()
-            .onErrorComplete()
-            .subscribeOn(Schedulers.io())
-            .subscribe()
+        if (!preferences.incognitoMode().get()) {
+            val history = History.create(chapter.chapter).apply { last_read = Date().time }
+            db.updateHistoryLastRead(history).asRxCompletable()
+                .onErrorComplete()
+                .subscribeOn(Schedulers.io())
+                .subscribe()
+        }
     }
 
     /**
@@ -569,7 +595,7 @@ class ReaderPresenter(
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribeFirst(
-                { view, file -> view.onShareImageResult(file) },
+                { view, file -> view.onShareImageResult(file, page) },
                 { _, _ -> /* Empty */ }
             )
     }

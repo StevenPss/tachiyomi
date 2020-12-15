@@ -21,7 +21,6 @@
     <string name="action_filter_downloaded">Завантажені</string>
     <string name="action_filter_bookmarked">Закладки</string>
     <string name="action_filter_unread">Непрочитані</string>
-    <string name="action_filter_read">Читати</string>
     <string name="action_filter_empty">Видалити фільтр</string>
     <string name="action_sort_alpha">В алфавітному порядку</string>
     <string name="action_sort_total">За кількістю глав</string>
@@ -138,8 +137,8 @@
     <string name="pref_double_tap_anim_speed">Швидкість анімації при подвійному натиснені</string>
     <string name="pref_show_page_number">Показувати номер сторінки</string>
     <string name="pref_crop_borders">Межі обрізки</string>
-    <string name="pref_custom_brightness">Використовувати користувацьку яскравість</string>
-    <string name="pref_custom_color_filter">Використовувати користувацький кольоровий фільтр</string>
+    <string name="pref_custom_brightness">Користувацька яскравість</string>
+    <string name="pref_custom_color_filter">Користувацький кольоровий фільтр</string>
     <string name="pref_keep_screen_on">Тримати екран ввімкненим</string>
     <string name="pref_reader_navigation">Навігація</string>
     <string name="pref_read_with_volume_keys">Клавіші гучності</string>
@@ -182,8 +181,8 @@
     <string name="color_filter_a_value">A</string>
     <string name="pref_download_directory">Директорія завантаження</string>
     <string name="pref_download_only_over_wifi">Завантажувати лише через Wi-Fi</string>
-    <string name="pref_remove_after_marked_as_read">Видалити коли відмічено як прочитано</string>
-    <string name="pref_remove_after_read">Видаляти після прочитання</string>
+    <string name="pref_remove_after_marked_as_read">Після того, як було відміченим як прочитане</string>
+    <string name="pref_remove_after_read">Після прочитання</string>
     <string name="custom_dir">Користувацька директорія</string>
     <string name="disabled">Відключено</string>
     <string name="last_read_chapter">Остання прочитана глава</string>
@@ -203,7 +202,6 @@
     <string name="pref_backup_service_category">Автоматичне резервування</string>
     <string name="pref_backup_interval">Частота створення резервної копії</string>
     <string name="pref_backup_slots">Максимальна кількість резервних копій</string>
-    <string name="source_not_found">Джерело не знайдено</string>
     <string name="backup_created">Резервна копія створена</string>
     <string name="restore_completed">Відновлення завершено</string>
     <string name="backup_restore_content">Відновлення використовує джерела для отримання даних, можуть застосовуватися витрати оператора.
@@ -240,8 +238,6 @@
     <string name="library_search_hint">Назва чи автор…</string>
     <string name="updating_category">Оновлення категорії</string>
     <string name="local_source_badge">Локальна</string>
-    <string name="confirm_delete_manga">Ви впевнені, що бажаєте видалити вибрані манги\?</string>
-    <string name="also_delete_chapters">Також видалити завантажені глави</string>
     <string name="source_requires_login">Цей каталог потребує авторизації</string>
     <string name="select_source">Оберіть каталог</string>
     <string name="no_valid_sources">Будь ласка увімкніть хоча б одне джерело</string>
@@ -348,7 +344,6 @@
     <string name="notification_no_connection_body">З`єднання не доступне</string>
     <string name="file_select_cover">Вибрати обкладинку</string>
     <string name="file_select_backup">Виберіть файл резервної копії</string>
-    <string name="file_select_icon">Вибрати ярлик</string>
     <string name="update_check_confirm">Завантажити</string>
     <string name="update_check_ignore">Ігнорувати</string>
     <string name="update_check_no_new_updates">Оновлень не виявлено</string>
@@ -374,7 +369,6 @@
     <string name="download_notifier_download_paused">Завантаження призупинено</string>
     <string name="channel_common">Звичайний</string>
     <string name="channel_library">Бібліотека</string>
-    <string name="channel_downloader">Завантажувач</string>
     <string name="pref_read_with_long_tap">Діалог тривалого тицяння</string>
     <string name="action_open_in_web_view">Відкрити у WebView</string>
     <string name="pref_true_color">32-бітний колір</string>
@@ -426,8 +420,9 @@
     <string name="lock_never">Ніколи</string>
     <plurals name="lock_after_mins">
         <item quantity="one">Після 1 хвилини</item>
-        <item quantity="few">Після 1%$s хвилин</item>
-        <item quantity="many">Після 1%$s хвилин</item>
+        <item quantity="few">Після %1$s хвилин</item>
+        <item quantity="many">Після %1$s хвилин</item>
+        <item quantity="other">Після %1$s хвилин</item>
     </plurals>
     <string name="secure_screen">Екран безпеки</string>
     <string name="ext_updates_pending">Очікуються оновлення</string>
@@ -464,7 +459,6 @@
         <item quantity="many">Для %d тайтлів</item>
     </plurals>
     <string name="notices">Примітки білдів</string>
-    <string name="changelog">Чейнджлог</string>
     <string name="pref_theme_light">Світла тема</string>
     <string name="theme_light_default">За замовчуванням</string>
     <string name="theme_light_blue">Блакитна</string>
@@ -503,7 +497,6 @@
     <string name="add_to_library">Додати в бібліотеку</string>
     <string name="manga_info_collapse">Менше</string>
     <string name="manga_info_expand">Більше</string>
-    <string name="manga_info_about_label">Про мангу</string>
     <string name="information_webview_required">WebView необхідний для Tachiyomi</string>
     <string name="licenses">Ліцензії з відкритим кодом</string>
     <string name="website">Сторінка</string>
@@ -561,13 +554,10 @@
     <string name="tracker_not_logged_in">Не зареєстровано в: %1$s</string>
     <string name="source_not_found_name">Джерело не знайдено %1$s</string>
     <string name="pref_search_pinned_sources_only">Включати тільки закріплені джерела</string>
-    <string name="tracking_info">Одностороння синхронізація для оновлення прогресу глави в службах відстеження. Налаштуйте відстеження для окремих записів манги з їх вкладок відстеження.</string>
+    <string name="tracking_info">Одностороння синхронізація для оновлення прогресу глави в службах відстеження. Налаштуйте відстеження для окремих записів манги з їх кнопками відстеження.</string>
     <string name="action_display_show_tabs">Показувати вкладки категорій</string>
     <string name="action_display_comfortable_grid">Зручна сітка</string>
     <string name="track_finished_reading_date">Дата завершення читання</string>
-    <string name="channel_backup_restore_complete">Завершено</string>
-    <string name="channel_backup_restore_progress">Поступ</string>
-    <string name="channel_backup_restore">Резервування та відновлення</string>
     <plurals name="notification_update_error">
         <item quantity="one">1 оновлення схалепилось</item>
         <item quantity="few">%1$d оновлень схалепилось</item>
@@ -601,8 +591,73 @@
     <string name="pref_read_with_tapping_inverted">Інвертувати тицяння</string>
     <string name="unknown_status">Невідомий статус</string>
     <string name="unknown_author">Невідомий автор</string>
-    <string name="pref_dns_over_https_summary">Потрібен перезапуск, щоб зміни вступили в дію</string>
+    <string name="requires_app_restart">Потрібен перезапуск, щоб зміни вступили в дію</string>
     <string name="pref_dns_over_https" translatable="false">DNS понад HTTPS (Cloudflare)</string>
     <string name="label_network">Мережа</string>
     <string name="pref_jump_to_chapters">Перейти до глав при відкритті</string>
+    <string name="updated_version">Оновлено до v%1$s</string>
+    <string name="whats_new">Що новенького</string>
+    <string name="action_download_unread">Завантажити непрочитані глави</string>
+    <string name="download_insufficient_space">Не вдалось завантажити глави через нестачу місця на диску</string>
+    <string name="action_global_search_query">Шукати для \"%1$s\" глобально</string>
+    <string name="pref_category_reading_mode">Режим читання</string>
+    <string name="pref_category_locale">Локаль</string>
+    <string name="pref_category_theme">Тема</string>
+    <string name="action_sort_date_added">Дата додавання</string>
+    <plurals name="num_trackers">
+        <item quantity="one">1 трекер</item>
+        <item quantity="few">%d трекери</item>
+        <item quantity="many">%d трекерів</item>
+        <item quantity="other">%d трекерів</item>
+    </plurals>
+    <string name="no_pinned_sources">У вас немає закріплених джерел</string>
+    <string name="group_backup_restore">Бекап та відновлення</string>
+    <string name="group_downloader">Завантаження</string>
+    <string name="channel_errors">Помилки</string>
+    <string name="channel_complete">Завершено</string>
+    <string name="channel_progress">Поступ</string>
+    <string name="download_notifier_download_finish">Завантаження завершено</string>
+    <string name="backup_restore_missing_trackers">Трекери не авторизовано:</string>
+    <string name="pref_remove_bookmarked_chapters">Видалити глави з закладок</string>
+    <string name="pref_category_delete_chapters">Видалити глави</string>
+    <string name="ext_nsfw_warning">Може містити контент 18+</string>
+    <string name="ext_nsfw_short">18+</string>
+    <string name="parental_controls_info">Це не заважає неофіційним або потенційно невірним розширенням розміщувати вміст 18+ у додатку.</string>
+    <string name="pref_allow_nsfw_sources_blocked">Заблоковано</string>
+    <string name="pref_allow_nsfw_sources_allowed_multisource">Блокувати переглянуті джерела, але показувати в списку розширень</string>
+    <string name="pref_allow_nsfw_sources_allowed">Дозволено</string>
+    <string name="pref_allow_nsfw_sources">18+ джерела</string>
+    <plurals name="missing_chapters_warning">
+        <item quantity="one">Відсутня 1 глава</item>
+        <item quantity="few">Відсутні %d глави</item>
+        <item quantity="many">Відсутні %d глав</item>
+        <item quantity="other">Відсутні %d глав</item>
+    </plurals>
+    <string name="no_chapters_error">Немає глав</string>
+    <string name="chapter_settings_updated">Оновлено налаштування глави за замовчуванням</string>
+    <string name="share_page_info">%1$s: %2$s, сторінка %3$d</string>
+    <string name="set_chapter_settings_as_default">За замовчуванням</string>
+    <string name="also_set_chapter_settings_for_library">Також застосувати для усієї манги в моїй бібліотеці</string>
+    <string name="confirm_set_chapter_settings">Ви впевнені, що бажаєте зберегти ці налаштування за замовчуванням\?</string>
+    <string name="chapter_settings">Налаштування глави</string>
+    <string name="action_web_view">WebView</string>
+    <string name="downloaded_chapters">Завантажені глави</string>
+    <string name="manga_from_library">Манга з бібліотеки</string>
+    <string name="pref_hide_bottom_bar_on_scroll">Приховати нижню панель при прокручуванні</string>
+    <string name="action_search_settings">Налаштування пошуку</string>
+    <string name="pref_incognito_mode_summary">Призупиняє історію читання</string>
+    <string name="pref_incognito_mode">Режим інкогніто</string>
+    <string name="pref_clear_history_summary">Видалити всю історію для всієї манги</string>
+    <string name="pref_clear_history">Очистити історію</string>
+    <string name="clear_history_confirmation">Ви впевнені\? Всю історію буде втрачено.</string>
+    <string name="clear_history_completed">Історію видалено</string>
+    <string name="spen_next_page">Наступна сторінка</string>
+    <string name="spen_previous_page">Попередня сторінка</string>
+    <string name="migration_help_guide">Гайд по міграції джерел</string>
+    <string name="full_restore_offline">Оффлайн відновлення працює швидше, але містить тільки те що було в вашій резервній копії</string>
+    <string name="full_restore_online">Онлайн відновлення значно повільніше але забезпечує оновлені інформацію та глави</string>
+    <string name="full_restore_mode">Мережевий режим</string>
+    <string name="pref_backup_auto_create_legacy">Також створювати сумісну копію</string>
+    <string name="pref_create_legacy_backup_summary">Може бути використано в старіших версіях Tachiyomi</string>
+    <string name="pref_create_legacy_backup">Створити сумісну резервну копію</string>
 </resources>

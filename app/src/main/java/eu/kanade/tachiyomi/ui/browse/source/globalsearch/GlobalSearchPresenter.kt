@@ -108,7 +108,7 @@ open class GlobalSearchPresenter(
         return sourceManager.getCatalogueSources()
             .filter { it.lang in languages }
             .filterNot { it.id.toString() in disabledSourceIds }
-            .sortedWith(compareBy({ it.id.toString() !in pinnedSourceIds }, { "(${it.lang}) ${it.name}" }))
+            .sortedWith(compareBy({ it.id.toString() !in pinnedSourceIds }, { "${it.name.toLowerCase()} (${it.lang})" }))
     }
 
     private fun getSourcesToQuery(): List<CatalogueSource> {
@@ -161,6 +161,8 @@ open class GlobalSearchPresenter(
         val initialItems = sources.map { createCatalogueSearchItem(it, null) }
         var items = initialItems
 
+        val pinnedSourceIds = preferences.pinnedSources().get()
+
         fetchSourcesSubscription?.unsubscribe()
         fetchSourcesSubscription = Observable.from(sources)
             .flatMap(
@@ -168,9 +170,9 @@ open class GlobalSearchPresenter(
                     Observable.defer { source.fetchSearchManga(1, query, FilterList()) }
                         .subscribeOn(Schedulers.io())
                         .onErrorReturn { MangasPage(emptyList(), false) } // Ignore timeouts or other exceptions
-                        .map { it.mangas.take(10) } // Get at most 10 manga from search result.
-                        .map { list -> list.map { networkToLocalManga(it, source.id) } } // Convert to local manga.
-                        .doOnNext { fetchImage(it, source) } // Load manga covers.
+                        .map { it.mangas }
+                        .map { list -> list.map { networkToLocalManga(it, source.id) } } // Convert to local manga
+                        .doOnNext { fetchImage(it, source) } // Load manga covers
                         .map { list -> createCatalogueSearchItem(source, list.map { GlobalSearchCardItem(it) }) }
                 },
                 5
@@ -178,7 +180,17 @@ open class GlobalSearchPresenter(
             .observeOn(AndroidSchedulers.mainThread())
             // Update matching source with the obtained results
             .map { result ->
-                items.map { item -> if (item.source == result.source) result else item }
+                items
+                    .map { item -> if (item.source == result.source) result else item }
+                    .sortedWith(
+                        compareBy(
+                            // Bubble up sources that actually have results
+                            { it.results.isNullOrEmpty() },
+                            // Same as initial sort, i.e. pinned first then alphabetically
+                            { it.source.id.toString() !in pinnedSourceIds },
+                            { "${it.source.name.toLowerCase()} (${it.source.lang})" }
+                        )
+                    )
             }
             // Update current state
             .doOnNext { items = it }
@@ -209,9 +221,8 @@ open class GlobalSearchPresenter(
     private fun initializeFetchImageSubscription() {
         fetchImageSubscription?.unsubscribe()
         fetchImageSubscription = fetchImageSubject.observeOn(Schedulers.io())
-            .flatMap { pair ->
-                val source = pair.second
-                Observable.from(pair.first).filter { it.thumbnail_url == null && !it.initialized }
+            .flatMap { (first, source) ->
+                Observable.from(first).filter { it.thumbnail_url == null && !it.initialized }
                     .map { Pair(it, source) }
                     .concatMap { getMangaDetailsObservable(it.first, it.second) }
                     .map { Pair(source as CatalogueSource, it) }

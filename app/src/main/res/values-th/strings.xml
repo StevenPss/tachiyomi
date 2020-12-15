@@ -18,7 +18,6 @@
     <string name="label_categories">ประเภท</string>
     <string name="action_filter_downloaded">ดาวน์โหลดแล้ว</string>
     <string name="action_filter_unread">ยังไม่ได้อ่าน</string>
-    <string name="action_filter_read">อ่าน</string>
     <string name="action_filter_empty">ลบตัวกรอง</string>
     <string name="action_sort_alpha">ตามตัวอักษร</string>
     <string name="action_sort_total">จำนวนตอน</string>
@@ -205,7 +204,6 @@
     <string name="pref_backup_service_category">บริการ</string>
     <string name="pref_backup_interval">ความถี่ในการสำรองข้อมูล</string>
     <string name="pref_backup_slots">จำนวนการสำรองข้อมูลอัตโนมัติสูงสุด</string>
-    <string name="source_not_found">ไม่พบแหล่งที่มา</string>
     <string name="backup_created">การสำรองข้อมูลที่สร้างขึ้น</string>
     <string name="restore_completed">การคืนค่าเสร็จสมบูรณ์</string>
     <string name="backup_choice">คุณต้องการสำรองข้อมูลอะไร\?</string>
@@ -239,8 +237,6 @@
     <string name="library_search_hint">ชื่อเรื่องหรือผู้เขียน …</string>
     <string name="updating_category">กำลังอัพเดตประเภท</string>
     <string name="local_source_badge">ท้องถิ่น</string>
-    <string name="confirm_delete_manga">คุณแน่ใจหรือไม่ว่าคุณต้องการเอามังงะที่เลือกออก\?</string>
-    <string name="also_delete_chapters">ลบบทที่ดาวน์โหลดด้วย</string>
     <string name="source_requires_login">แหล่งที่มานี้ต้องการให้คุณเข้าสู่ระบบ</string>
     <string name="select_source">เลือกแหล่งที่มา</string>
     <string name="no_valid_sources">กรุณาเปิดใช้งานอย่างน้อยหนึ่งแหล่งที่ถูกต้อง</string>
@@ -252,7 +248,7 @@
     <string name="action_global_search_hint">ค้นหาทั้งหมด…</string>
     <string name="latest">ล่าสุด</string>
     <string name="browse">เปิดดู</string>
-    <string name="manga_not_in_db">มังงะนี้ถูกลบออกจากฐานข้อมูล!</string>
+    <string name="manga_not_in_db">มังงะนี้ถูกลบออกจากฐานข้อมูล</string>
     <string name="manga_detail_tab">ข้อมูล</string>
     <string name="description">คำอธิบาย</string>
     <string name="ongoing">ยังดำเนินการอยู่</string>
@@ -358,7 +354,6 @@
     <string name="notification_no_connection_body">การเชื่อมต่อไม่พร้อม</string>
     <string name="file_select_cover">เลือกภาพหน้าปก</string>
     <string name="file_select_backup">เลือกไฟล์สำรองข้อมูล</string>
-    <string name="file_select_icon">เลือกไอคอนทางลัด</string>
     <string name="update_check_confirm">ดาวน์โหลด</string>
     <string name="update_check_ignore">ไม่สนใจ</string>
     <string name="update_check_no_new_updates">ไม่มีการอัปเดตใหม่</string>
@@ -384,7 +379,6 @@
     <string name="download_notifier_download_paused">ดาวน์โหลดหยุดชั่วคราว</string>
     <string name="channel_common">ร่วมกัน</string>
     <string name="channel_library">ห้องสมุด</string>
-    <string name="channel_downloader">การดาวน์โหลด</string>
     <string name="filter_mode_multiply">หลากหลาย</string>
     <string name="filter_mode_darken">มืดมิด</string>
     <string name="migration_selection_prompt">เลือกแหล่งที่มา</string>

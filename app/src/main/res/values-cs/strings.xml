@@ -9,14 +9,13 @@
     <string name="label_recent_manga">Historie</string>
     <string name="label_categories">Kategorie</string>
     <string name="label_backup">Záloha</string>
-    <string name="label_migration">Zdroj migrace</string>
+    <string name="label_migration">Migrovat</string>
     <string name="label_extensions">Rozšíření</string>
     <string name="label_extension_info">Informace o rozšíření</string>
     <string name="action_settings">Nastavení</string>
     <string name="action_filter">Filtr</string>
     <string name="action_filter_downloaded">Staženo</string>
     <string name="action_filter_unread">Nepřečteno</string>
-    <string name="action_filter_read">Přečteno</string>
     <string name="action_filter_empty">Odstranit filtr</string>
     <string name="action_sort_alpha">Abecedně</string>
     <string name="action_sort_last_read">Naposledy čteno</string>
@@ -117,7 +116,6 @@
     <string name="login_success">Přihlášení proběhlo úspěšně</string>
     <string name="invalid_login">Chyba při přihlašování</string>
     <string name="unknown_error">Neznámá chyba</string>
-    <string name="confirm_delete_manga">Opravdu chcete odstranit vybrané mangy\?</string>
     <string name="no_more_results">Žádné další výsledky</string>
     <string name="added_to_library">Manga byla přidána do vaší knihovny</string>
     <string name="action_global_search_hint">Globální vyhledávání…</string>
@@ -187,7 +185,6 @@
     <string name="notification_no_connection_title">Synchronizace zrušena</string>
     <string name="notification_no_connection_body">Připojení není k dispozici</string>
     <string name="file_select_backup">Vybrat záložní soubor</string>
-    <string name="file_select_icon">Vybrat ikonu zástupce</string>
     <string name="update_check_confirm">Stáhnout</string>
     <string name="update_check_ignore">Ignorovat</string>
     <string name="update_check_no_new_updates">Žádné nové aktualizace</string>
@@ -195,7 +192,7 @@
     <string name="update_check_notification_file_download">Stáhnout aktualizaci</string>
     <string name="update_check_notification_download_complete">Stahování dokončeno</string>
     <string name="update_check_notification_download_error">Chyba při stahování</string>
-    <string name="update_check_notification_update_available">Dostupná aktualizace</string>
+    <string name="update_check_notification_update_available">Dostupná aktualizace!</string>
     <string name="information_no_recent">Žádné nedávné kapitoly</string>
     <string name="information_no_recent_manga">Žádné nedávno čtené mangy</string>
     <string name="download_notifier_title_error">Chyba</string>
@@ -217,7 +214,7 @@
     <string name="action_update">Aktualizovat</string>
     <string name="action_update_library">Aktualizovat knihovnu</string>
     <string name="action_rename_category">Přejmenovat kategorii</string>
-    <string name="action_move_category">Přesunout do kategorií</string>
+    <string name="action_move_category">Vybrat kategorie</string>
     <string name="action_stop">Stop</string>
     <string name="action_pause">Pauza</string>
     <string name="action_retry">Opakovat</string>
@@ -277,7 +274,6 @@
     <string name="pref_backup_directory">Adresář zálohy</string>
     <string name="pref_backup_service_category">Služba</string>
     <string name="pref_backup_interval">Frekvence zálohy</string>
-    <string name="source_not_found">Zdroj nebyl nalezen</string>
     <string name="backup_created">Záloha vytvořena</string>
     <string name="restore_completed">Obnova kompletní</string>
     <string name="backup_choice">Co chcete zálohovat\?</string>
@@ -301,7 +297,6 @@
     <string name="pref_acra_summary">Pomáhá opravit chyby. Nebudou odeslány žádné citlivé údaje</string>
     <string name="updating_category">Aktualizace kategorie</string>
     <string name="local_source_badge">Lokální</string>
-    <string name="also_delete_chapters">Odstranit také stažené kapitoly</string>
     <string name="source_requires_login">Tento zdroj vyžaduje přihlášení</string>
     <string name="select_source">Vybrat zdroj</string>
     <string name="no_valid_sources">Povolte prosím aspoň jeden platný zdroj</string>
@@ -311,7 +306,8 @@
     <string name="browse">Procházet</string>
     <string name="unknown">Neznámý</string>
     <string name="licensed">Licencovaný</string>
-    <string name="copied_to_clipboard">%1$s zkopírováno do schránky</string>
+    <string name="copied_to_clipboard">Zkopírováno do schránky:
+\n%1$s</string>
     <string name="chapter_queued">Ve frontě</string>
     <string name="fetch_chapters_error">Chyba při načítání kapitol.</string>
     <string name="sorting_mode">Režim seřazení</string>
@@ -349,6 +345,7 @@
     <string name="pref_restore_backup_summ">Obnovit knihovnu ze záložního souboru</string>
     <string name="pref_backup_slots">Maximální automatické zálohování</string>
     <string name="backup_restore_content">Obnovení používá zdroje pro načítání dat, mohou být účtovány poplatky od operátora (v případě použití datového připojení).
+\n
 \nTaké se před obnovením ujistěte, že jste správně přihlášeni do zdrojů, které to vyžadují.</string>
     <string name="choices_reset">Volby dialogu se vynulují</string>
     <string name="login_title">Přihlásit se do %1$s</string>
@@ -372,7 +369,6 @@
     <string name="information_empty_category">Nemáte žádné kategorie. Klikněte na tlačítko plus a vytvořte nějakou pro organizaci vaší knihovny.</string>
     <string name="download_notifier_downloader_title">Stahovač</string>
     <string name="channel_common">Běžný</string>
-    <string name="channel_downloader">Stahovač</string>
     <string name="label_help">Nápověda</string>
     <string name="action_open_in_web_view">Otevřít ve web view</string>
     <string name="pref_read_with_long_tap">Nabídka při dlouhém podržení</string>
@@ -402,4 +398,9 @@
     <string name="logout_title">Odhlásit z %1$s\?</string>
     <string name="logout_success">Byl jste odhlášen</string>
     <string name="paused">Pozastaveno</string>
+    <string name="label_more">Více</string>
+    <string name="action_menu">Menu</string>
+    <string name="label_sources">Zdroje</string>
+    <string name="spen_previous_page">Předchozí stránka</string>
+    <string name="spen_next_page">Následující stránka</string>
 </resources>

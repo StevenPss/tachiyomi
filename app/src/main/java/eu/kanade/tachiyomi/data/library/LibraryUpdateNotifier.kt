@@ -22,9 +22,9 @@ import eu.kanade.tachiyomi.util.lang.chop
 import eu.kanade.tachiyomi.util.system.notification
 import eu.kanade.tachiyomi.util.system.notificationBuilder
 import eu.kanade.tachiyomi.util.system.notificationManager
+import uy.kohesive.injekt.injectLazy
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
-import uy.kohesive.injekt.injectLazy
 
 class LibraryUpdateNotifier(private val context: Context) {
 
@@ -109,7 +109,7 @@ class LibraryUpdateNotifier(private val context: Context) {
 
                 setContentIntent(errorLogIntent)
                 addAction(
-                    R.drawable.nnf_ic_file_folder,
+                    R.drawable.ic_folder_24dp,
                     context.getString(R.string.action_open_log),
                     errorLogIntent
                 )
@@ -165,8 +165,7 @@ class LibraryUpdateNotifier(private val context: Context) {
 
             // Per-manga notification
             if (!preferences.hideNotificationContent()) {
-                updates.forEach {
-                    val (manga, chapters) = it
+                updates.forEach { (manga, chapters) ->
                     notify(manga.id.hashCode(), createNewChaptersNotification(manga, chapters))
                 }
             }
@@ -198,18 +197,23 @@ class LibraryUpdateNotifier(private val context: Context) {
 
             // Mark chapters as read action
             addAction(
-                R.drawable.ic_glasses_black_24dp, context.getString(R.string.action_mark_as_read),
+                R.drawable.ic_glasses_black_24dp,
+                context.getString(R.string.action_mark_as_read),
                 NotificationReceiver.markAsReadPendingBroadcast(
                     context,
-                    manga, chapters, Notifications.ID_NEW_CHAPTERS
+                    manga,
+                    chapters,
+                    Notifications.ID_NEW_CHAPTERS
                 )
             )
             // View chapters action
             addAction(
-                R.drawable.ic_book_24dp, context.getString(R.string.action_view_chapters),
+                R.drawable.ic_book_24dp,
+                context.getString(R.string.action_view_chapters),
                 NotificationReceiver.openChapterPendingActivity(
                     context,
-                    manga, Notifications.ID_NEW_CHAPTERS
+                    manga,
+                    Notifications.ID_NEW_CHAPTERS
                 )
             )
         }

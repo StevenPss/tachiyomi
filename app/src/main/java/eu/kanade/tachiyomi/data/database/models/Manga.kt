@@ -1,6 +1,7 @@
 package eu.kanade.tachiyomi.data.database.models
 
 import eu.kanade.tachiyomi.source.model.SManga
+import tachiyomi.source.model.MangaInfo
 
 interface Manga : SManga {
 
@@ -24,16 +25,16 @@ interface Manga : SManga {
         setFlags(order, SORT_MASK)
     }
 
-    private fun setFlags(flag: Int, mask: Int) {
-        chapter_flags = chapter_flags and mask.inv() or (flag and mask)
-    }
-
     fun sortDescending(): Boolean {
         return chapter_flags and SORT_MASK == SORT_DESC
     }
 
     fun getGenres(): List<String>? {
         return genre?.split(", ")?.map { it.trim() }
+    }
+
+    private fun setFlags(flag: Int, mask: Int) {
+        chapter_flags = chapter_flags and mask.inv() or (flag and mask)
     }
 
     // Used to display the chapter's title one way or another
@@ -97,4 +98,17 @@ interface Manga : SManga {
             this.source = source
         }
     }
+}
+
+fun Manga.toMangaInfo(): MangaInfo {
+    return MangaInfo(
+        artist = this.artist ?: "",
+        author = this.author ?: "",
+        cover = this.thumbnail_url ?: "",
+        description = this.description ?: "",
+        genres = this.getGenres() ?: emptyList(),
+        key = this.url,
+        status = this.status,
+        title = this.title
+    )
 }

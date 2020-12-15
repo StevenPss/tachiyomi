@@ -6,6 +6,7 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
@@ -16,16 +17,14 @@ import eu.kanade.tachiyomi.databinding.DownloadControllerBinding
 import eu.kanade.tachiyomi.source.model.Page
 import eu.kanade.tachiyomi.ui.base.controller.FabController
 import eu.kanade.tachiyomi.ui.base.controller.NucleusController
-import eu.kanade.tachiyomi.util.view.gone
 import eu.kanade.tachiyomi.util.view.shrinkOnScroll
-import eu.kanade.tachiyomi.util.view.visible
-import java.util.concurrent.TimeUnit
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import reactivecircus.flowbinding.android.view.clicks
 import rx.Observable
 import rx.Subscription
 import rx.android.schedulers.AndroidSchedulers
+import java.util.concurrent.TimeUnit
 
 /**
  * Controller that shows the currently active downloads.
@@ -284,11 +283,11 @@ class DownloadController :
     private fun setInformationView() {
         if (presenter.downloadQueue.isEmpty()) {
             binding.emptyView.show(R.string.information_no_downloads)
-            actionFab?.gone()
+            actionFab?.isVisible = false
         } else {
             binding.emptyView.hide()
             actionFab?.apply {
-                visible()
+                isVisible = true
 
                 setText(
                     if (isRunning) {

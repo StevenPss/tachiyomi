@@ -3,12 +3,12 @@ package eu.kanade.tachiyomi.ui.browse.extension.details
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import eu.kanade.tachiyomi.R
 import eu.kanade.tachiyomi.databinding.ExtensionDetailHeaderBinding
 import eu.kanade.tachiyomi.ui.browse.extension.getApplicationIcon
 import eu.kanade.tachiyomi.util.system.LocaleHelper
-import eu.kanade.tachiyomi.util.view.visible
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -42,6 +42,7 @@ class ExtensionDetailsHeaderAdapter(private val presenter: ExtensionDetailsPrese
             binding.extensionTitle.text = extension.name
             binding.extensionVersion.text = context.getString(R.string.ext_version_info, extension.versionName)
             binding.extensionLang.text = context.getString(R.string.ext_language_info, LocaleHelper.getSourceDisplayName(extension.lang, context))
+            binding.extensionNsfw.isVisible = extension.isNsfw
             binding.extensionPkg.text = extension.pkgName
 
             binding.extensionUninstallButton.clicks()
@@ -49,12 +50,12 @@ class ExtensionDetailsHeaderAdapter(private val presenter: ExtensionDetailsPrese
                 .launchIn(scope)
 
             if (extension.isObsolete) {
-                binding.extensionWarningBanner.visible()
+                binding.extensionWarningBanner.isVisible = true
                 binding.extensionWarningBanner.setText(R.string.obsolete_extension_message)
             }
 
             if (extension.isUnofficial) {
-                binding.extensionWarningBanner.visible()
+                binding.extensionWarningBanner.isVisible = true
                 binding.extensionWarningBanner.setText(R.string.unofficial_extension_message)
             }
         }

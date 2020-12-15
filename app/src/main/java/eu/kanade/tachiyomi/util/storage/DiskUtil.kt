@@ -6,6 +6,7 @@ import android.net.Uri
 import android.os.Environment
 import android.os.StatFs
 import androidx.core.content.ContextCompat
+import androidx.core.net.toUri
 import androidx.core.os.EnvironmentCompat
 import com.hippo.unifile.UniFile
 import eu.kanade.tachiyomi.util.lang.Hash
@@ -33,11 +34,12 @@ object DiskUtil {
      * Gets the available space for the disk that a file path points to, in bytes.
      */
     fun getAvailableStorageSpace(f: UniFile): Long {
-        val stat = StatFs(f.filePath)
-        val availBlocks = stat.availableBlocksLong
-        val blockSize = stat.blockSizeLong
-
-        return availBlocks * blockSize
+        return try {
+            val stat = StatFs(f.uri.path)
+            stat.availableBlocksLong * stat.blockSizeLong
+        } catch (_: Exception) {
+            -1L
+        }
     }
 
     /**
@@ -77,7 +79,7 @@ object DiskUtil {
      * Scans the given file so that it can be shown in gallery apps, for example.
      */
     fun scanMedia(context: Context, file: File) {
-        scanMedia(context, Uri.fromFile(file))
+        scanMedia(context, file.toUri())
     }
 
     /**
